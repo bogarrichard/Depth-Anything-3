@@ -17,8 +17,9 @@ Configuration utility functions
 """
 
 import importlib
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Union
+from typing import Any, Union
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
 try:

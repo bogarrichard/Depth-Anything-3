@@ -8,8 +8,8 @@
 #   https://github.com/rwightman/pytorch-image-models/tree/master/timm/models/vision_transformer.py
 
 import math
-from collections.abc import Sequence
-from typing import Callable, Union
+from collections.abc import Callable, Sequence
+from typing import Union
 import numpy as np
 import torch
 import torch.nn as nn

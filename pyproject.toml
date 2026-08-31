@@ -7,7 +7,7 @@ name = "depth-anything-3"
 version = "0.0.0"
 description = "Depth Anything 3"
 readme = "README.md"
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.10,<3.14"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Your Name" }]
 
@@ -39,7 +39,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pre-commit"]
-app = ["gradio>=5", "pillow>=9.0"] # requires that python3>=3.10
+app = ["gradio>=5", "pillow>=9.0"]
 gs = ["gsplat>=1.5,<2"]
 all = ["depth-anything-3[app,gs]"]
 
@@ -71,7 +71,7 @@ plugins = ["jaxtyping.mypy_plugin"]
 
 [tool.ruff]
 line-length = 99
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 # E/F: pycodestyle+pyflakes (was flake8), I: isort, UP: pyupgrade
@@ -81,12 +81,17 @@ select = ["E", "F", "I", "UP"]
 # E501 is disabled per ruff's own guidance when the formatter is in use: the
 # formatter owns line length, so E501 only ever fires on things it cannot
 # split -- docstrings, comments, URLs and long string literals.
-ignore = ["E203", "E501", "E741", "E731"]
+#
+# UP007/UP045 (`Optional[X]`/`Union[X, Y]` -> `X | None`) are correct at the
+# 3.10 floor but deferred: they would rewrite 146 sites, and typer, FastAPI
+# and pydantic all read these annotations at runtime (cli.py alone has 112
+# typer.Option declarations). Enable once there is a test suite to catch a
+# regression -- see backlog item 4.
+ignore = ["E203", "E501", "E741", "E731", "UP007", "UP045"]
 
 [tool.ruff.lint.pyupgrade]
 # Mirrors the previous `pyupgrade --keep-runtime-typing`. Required: without it
-# UP006/UP045 rewrite annotations that are evaluated at runtime, which breaks
-# the declared Python 3.9 floor.
+# UP006/UP045 rewrite annotations that are evaluated at runtime.
 keep-runtime-typing = true
 
 [tool.ruff.lint.isort]

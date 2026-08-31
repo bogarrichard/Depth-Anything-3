@@ -9,7 +9,8 @@
 #   https://github.com/rwightman/pytorch-image-models/tree/master/timm/layers/mlp.py
 
 
-from typing import Callable, Optional
+from collections.abc import Callable
+from typing import Optional
 from torch import Tensor, nn
 
 

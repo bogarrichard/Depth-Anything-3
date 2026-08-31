@@ -10,7 +10,8 @@
 #   https://github.com/rwightman/pytorch-image-models/tree/master/timm/layers/patch_embed.py
 
 import logging
-from typing import Callable, Optional
+from collections.abc import Callable
+from typing import Optional
 import torch
 from torch import Tensor, nn
 

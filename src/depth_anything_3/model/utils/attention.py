@@ -14,7 +14,8 @@
 
 # Modified from: https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/vision_transformer.py#L103-L110 # noqa
 
-from typing import Callable, Optional, Union
+from collections.abc import Callable
+from typing import Optional, Union
 import torch
 import torch.nn.functional as F
 from torch import Tensor, nn

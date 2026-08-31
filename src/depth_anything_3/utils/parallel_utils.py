@@ -14,10 +14,10 @@
 
 import asyncio
 import os
+from collections.abc import Callable
 from functools import wraps
 from multiprocessing.pool import ThreadPool
 from threading import Thread
-from typing import Callable
 import imageio
 from tqdm import tqdm
 
