@@ -672,12 +672,15 @@ name = "depth-anything-3"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "addict" },
     { name = "e3nn" },
     { name = "einops" },
     { name = "evo" },
     { name = "fastapi" },
     { name = "huggingface-hub" },
     { name = "imageio" },
+    { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "matplotlib", version = "3.11.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "moviepy" },
     { name = "numpy" },
     { name = "omegaconf" },
@@ -687,10 +690,14 @@ dependencies = [
     { name = "pillow-heif" },
     { name = "plyfile" },
     { name = "pycolmap" },
+    { name = "pydantic" },
     { name = "requests" },
     { name = "safetensors" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "torch" },
     { name = "torchvision" },
+    { name = "tqdm" },
     { name = "trimesh" },
     { name = "typer" },
     { name = "uvicorn" },
@@ -708,6 +715,7 @@ all = [
     { name = "pillow" },
     { name = "prettytable" },
     { name = "pypose" },
+    { name = "rich" },
 ]
 app = [
     { name = "gradio" },
@@ -726,10 +734,12 @@ streaming = [
     { name = "pandas", version = "3.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "prettytable" },
     { name = "pypose" },
+    { name = "rich" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "addict" },
     { name = "depth-anything-3", extras = ["app", "gs", "streaming"], marker = "extra == 'all'" },
     { name = "e3nn" },
     { name = "einops" },
@@ -740,6 +750,7 @@ requires-dist = [
     { name = "gsplat", marker = "extra == 'gs'", specifier = ">=1.5,<2" },
     { name = "huggingface-hub" },
     { name = "imageio" },
+    { name = "matplotlib" },
     { name = "moviepy", specifier = "==1.0.3" },
     { name = "numba", marker = "extra == 'streaming'" },
     { name = "numpy", specifier = "<2" },
@@ -754,11 +765,15 @@ requires-dist = [
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "prettytable", marker = "extra == 'streaming'" },
     { name = "pycolmap" },
+    { name = "pydantic" },
     { name = "pypose", marker = "extra == 'streaming'" },
     { name = "requests" },
+    { name = "rich", marker = "extra == 'streaming'" },
     { name = "safetensors" },
+    { name = "scipy" },
     { name = "torch", specifier = ">=2" },
     { name = "torchvision" },
+    { name = "tqdm" },
     { name = "trimesh" },
     { name = "typer", specifier = ">=0.9.0" },
     { name = "uvicorn" },

@@ -12,6 +12,7 @@ license = { text = "Apache-2.0" }
 authors = [{ name = "Your Name" }]
 
 dependencies = [
+    "addict",
     "trimesh",
     "torch>=2",
     "torchvision",
@@ -28,6 +29,10 @@ dependencies = [
     "typer>=0.9.0",
     "pillow",
     "omegaconf",
+    "matplotlib",
+    "pydantic",
+    "scipy",
+    "tqdm",
     "evo",
     "e3nn",
     "moviepy==1.0.3",
@@ -43,7 +48,7 @@ app = ["gradio>=5", "pillow>=9.0"]
 gs = ["gsplat>=1.5,<2"]
 # da3_streaming/: long-video / large-scene streaming pipeline. einops and
 # safetensors are already core dependencies, so only the rest are listed.
-streaming = ["faiss-gpu", "pandas", "prettytable", "numba", "pypose"]
+streaming = ["faiss-gpu", "pandas", "prettytable", "numba", "pypose", "rich"]
 all = ["depth-anything-3[app,gs,streaming]"]
 
 
