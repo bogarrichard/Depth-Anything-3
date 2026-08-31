@@ -72,11 +72,6 @@ allow-direct-references = true
 [tool.mypy]
 plugins = ["jaxtyping.mypy_plugin"]
 
-[tool.uv]
-# Resolve the right torch wheel per machine at install time (cpu / cu126 /
-# ...) instead of baking one CUDA variant into the lockfile.
-torch-backend = "auto"
-
 [tool.ruff]
 line-length = 99
 target-version = "py310"
