@@ -369,8 +369,6 @@ class SevenScenes(Dataset):
             random_state=42,
         )
 
-        model_h, model_w = pred_data.depth.shape[1], pred_data.depth.shape[2]
-
         depths_out = []
         for i in range(len(pred_data.depth)):
             orig_h, orig_w = orig_sizes[i]

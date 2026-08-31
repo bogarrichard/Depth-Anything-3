@@ -323,7 +323,9 @@ class DinoVisionTransformer(nn.Module):
                 b_idx = select_reference_view(x, strategy=strategy)
                 # Reorder views to place reference view first
                 x = reorder_by_reference(x, b_idx)
-                local_x = reorder_by_reference(local_x, b_idx)
+                # local_x is bound by the `else` branch below on every earlier
+                # iteration; ruff cannot see the loop-carried binding.
+                local_x = reorder_by_reference(local_x, b_idx)  # noqa: F821
 
             if self.alt_start != -1 and i == self.alt_start:
                 if kwargs.get("cam_token", None) is not None:

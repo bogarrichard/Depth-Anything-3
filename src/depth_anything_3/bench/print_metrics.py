@@ -349,7 +349,6 @@ class MetricsPrinter:
         print(f"{Colors.BOLD_CYAN}{'=' * 120}{Colors.RESET}")
 
         # Dataset display order and names
-        DATASET_ORDER = ["hiroom", "eth3d", "dtu", "7scenes", "scannetpp", "dtu64"]
         DATASET_DISPLAY = {
             "hiroom": "HiRoom",
             "eth3d": "ETH3D",

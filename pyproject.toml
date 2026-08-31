@@ -78,7 +78,10 @@ target-version = "py39"
 select = ["E", "F", "I", "UP"]
 # E203 is handled by the formatter; W503 has no ruff equivalent (it was a
 # black-compatibility ignore and is obsolete). E741/E731 carried over.
-ignore = ["E203", "E741", "E731"]
+# E501 is disabled per ruff's own guidance when the formatter is in use: the
+# formatter owns line length, so E501 only ever fires on things it cannot
+# split -- docstrings, comments, URLs and long string literals.
+ignore = ["E203", "E501", "E741", "E731"]
 
 [tool.ruff.lint.pyupgrade]
 # Mirrors the previous `pyupgrade --keep-runtime-typing`. Required: without it

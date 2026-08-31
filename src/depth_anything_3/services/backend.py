@@ -390,7 +390,9 @@ def _run_inference_task(task_id: str):
         # Update task status to completed
         _tasks[task_id].status = "completed"
         _tasks[task_id].completed_at = time.time()
-        _tasks[task_id].message = (
+        _tasks[
+            task_id
+        ].message = (
             f"[{task_id}] Completed in {total_time:.2f}s ({avg_time_per_image:.2f}s per image)"
         )
         _tasks[task_id].progress = 1.0

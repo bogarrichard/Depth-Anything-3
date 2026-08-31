@@ -499,7 +499,6 @@ class DTU(Dataset):
 
         all_min_dists = []
         n_query_batches = (len(query) + batch_size - 1) // batch_size
-        n_target_batches = (len(target) + target_batch_size - 1) // target_batch_size
 
         # Pre-load target batches to GPU to avoid repeated transfers
         # Memory: ~50000 pts * 3 coords * 4 bytes * n_batches

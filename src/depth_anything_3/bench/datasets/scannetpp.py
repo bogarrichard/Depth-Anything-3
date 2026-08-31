@@ -222,7 +222,6 @@ class ScanNetPP(Dataset):
         """
         image = imageio.imread(img_path).astype(np.uint8)
         ixt_raw = aux.ixt_raw_list[idx]
-        ixt = aux.intrinsics[idx] if hasattr(aux, "intrinsics") else None
         dist = aux.dist_list[idx]
         roi = aux.roi_list[idx]
 
