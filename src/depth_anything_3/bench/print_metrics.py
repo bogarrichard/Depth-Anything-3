@@ -23,7 +23,8 @@ import argparse
 import json
 import os
 import re
-from typing import Dict as TDict, List, Optional
+from typing import Dict as TDict
+from typing import List
 
 
 # ANSI color codes for terminal output

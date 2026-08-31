@@ -8,31 +8,31 @@
 #   https://github.com/rwightman/pytorch-image-models/tree/master/timm/models/vision_transformer.py
 
 import math
-from typing import Callable, List, Sequence, Tuple, Union
+from collections.abc import Sequence
+from typing import Callable, List, Tuple, Union
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint
 from einops import rearrange
 
+from depth_anything_3.model.reference_view_selector import (
+    reorder_by_reference,
+    restore_original_order,
+    select_reference_view,
+)
+from depth_anything_3.utils.constants import THRESH_FOR_REF_SELECTION
 from depth_anything_3.utils.logger import logger
 
-from .layers import LayerScale  # noqa: F401
-from .layers import Mlp  # noqa: F401
 from .layers import (  # noqa: F401
     Block,
+    LayerScale,  # noqa: F401
+    Mlp,  # noqa: F401
     PatchEmbed,
     PositionGetter,
     RotaryPositionEmbedding2D,
     SwiGLUFFNFused,
 )
-from depth_anything_3.model.reference_view_selector import (
-    RefViewStrategy,
-    select_reference_view,
-    reorder_by_reference,
-    restore_original_order,
-)
-from depth_anything_3.utils.constants import THRESH_FOR_REF_SELECTION
 
 # logger = logging.getLogger("dinov2")
 

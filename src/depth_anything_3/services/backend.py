@@ -26,12 +26,10 @@ import re
 import secrets
 import time
 import uuid
-
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 import numpy as np
-
 import uvicorn
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
@@ -40,10 +38,10 @@ from pydantic import BaseModel, field_validator
 from ..api import DepthAnything3
 from ..utils.export import SUPPORTED_EXPORT_FORMATS
 from ..utils.memory import (
-    get_gpu_memory_info,
-    cleanup_cuda_memory,
     check_memory_availability,
+    cleanup_cuda_memory,
     estimate_memory_requirement,
+    get_gpu_memory_info,
 )
 
 

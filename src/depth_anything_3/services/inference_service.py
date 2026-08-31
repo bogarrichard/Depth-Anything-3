@@ -18,7 +18,6 @@ Provides unified interface for local and remote inference
 """
 
 import os
-
 from typing import Any, Dict, List, Optional, Union
 import numpy as np
 import requests

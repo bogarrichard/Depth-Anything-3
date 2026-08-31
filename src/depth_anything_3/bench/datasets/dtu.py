@@ -23,8 +23,8 @@ Note: DepthAnything3 was never trained on any images from DTU.
 
 import glob
 import os
-from typing import Dict as TDict, List
-
+from typing import Dict as TDict
+from typing import List
 import numpy as np
 import open3d as o3d
 import torch

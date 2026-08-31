@@ -24,17 +24,12 @@ Evaluation metrics:
 - Camera pose estimation: AUC metrics
 """
 
-import glob
 import os
-from typing import Dict as TDict, List, Optional
-
+from typing import Dict as TDict
 import cv2
 import numpy as np
 import open3d as o3d
-import torch
-import torch.nn.functional as F
 from addict import Dict
-from PIL import Image
 
 from depth_anything_3.bench.dataset import Dataset, _wait_for_file_ready
 from depth_anything_3.bench.registries import MONO_REGISTRY, MV_REGISTRY

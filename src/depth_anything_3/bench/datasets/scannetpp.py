@@ -26,7 +26,6 @@ Evaluation metrics:
 
 import os
 from typing import Dict as TDict
-
 import cv2
 import imageio
 import numpy as np

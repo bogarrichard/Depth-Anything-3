@@ -24,7 +24,6 @@ Note: GT depth loading is not implemented as it's not needed for pose evaluation
 import glob
 import os
 from typing import Dict as TDict
-
 import numpy as np
 from addict import Dict
 

@@ -21,7 +21,7 @@ In addition, it parallelizes per-image preprocessing using the provided `paralle
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 import cv2
 import numpy as np
 import torch

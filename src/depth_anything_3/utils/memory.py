@@ -7,9 +7,7 @@ the Gradio UI to keep memory-management behavior consistent.
 from __future__ import annotations
 
 import gc
-
 from typing import Any, Dict, Optional
-
 import torch
 
 

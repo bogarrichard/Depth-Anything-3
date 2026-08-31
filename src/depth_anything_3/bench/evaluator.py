@@ -25,17 +25,18 @@ Supports multiple datasets and evaluation modes:
 import json
 import os
 import random
-from typing import Dict as TDict, Iterable, List
-
+from collections.abc import Iterable
+from typing import Dict as TDict
+from typing import List
 import numpy as np
 import torch
 from addict import Dict
 from tqdm import tqdm
 
 from depth_anything_3.bench.print_metrics import MetricsPrinter
-from depth_anything_3.utils.parallel_utils import parallel_execution
 from depth_anything_3.bench.registries import MV_REGISTRY
 from depth_anything_3.utils.constants import EVAL_REF_VIEW_STRATEGY
+from depth_anything_3.utils.parallel_utils import parallel_execution
 
 
 class Evaluator:
@@ -218,21 +219,21 @@ class Evaluator:
         # Evaluate by mode (all datasets per mode)
         if "pose" in self.modes:
             print(f"\n{'='*60}")
-            print(f"📊 Evaluating POSE for all datasets...")
+            print("📊 Evaluating POSE for all datasets...")
             print(f"{'='*60}")
             for data, result in self._eval_pose():
                 summary[f"{data}_pose"] = result
 
         if "recon_unposed" in self.modes:
             print(f"\n{'='*60}")
-            print(f"📊 Evaluating RECON_UNPOSED for all datasets...")
+            print("📊 Evaluating RECON_UNPOSED for all datasets...")
             print(f"{'='*60}")
             for data, result in self._eval_reconstruction("recon_unposed"):
                 summary[f"{data}_recon_unposed"] = result
 
         if "recon_posed" in self.modes:
             print(f"\n{'='*60}")
-            print(f"📊 Evaluating RECON_POSED for all datasets...")
+            print("📊 Evaluating RECON_POSED for all datasets...")
             print(f"{'='*60}")
             for data, result in self._eval_reconstruction("recon_posed"):
                 summary[f"{data}_recon_posed"] = result
@@ -274,7 +275,7 @@ class Evaluator:
                 if not os.path.exists(result_path):
                     print(f"\n[ERROR] Result file not found: {result_path}")
                     print(f"[ERROR] CWD: {os.getcwd()}")
-                    print(f"[ERROR] Please run inference first (remove --eval_only)")
+                    print("[ERROR] Please run inference first (remove --eval_only)")
                     continue
                 
                 try:
@@ -534,7 +535,7 @@ class Evaluator:
 
 if __name__ == "__main__":
     import sys
-    from omegaconf import OmegaConf
+
     from depth_anything_3.cfg import load_config
 
     # Get default config path (relative to this file)

@@ -21,8 +21,8 @@ Contains:
 - Geometry utilities (quaternion conversion, etc.)
 """
 
-from typing import Dict as TDict, Optional, Tuple, Union
-
+from typing import Dict as TDict
+from typing import Optional, Union
 import numpy as np
 import open3d as o3d
 import torch
@@ -30,7 +30,6 @@ from addict import Dict
 from scipy.spatial import KDTree
 
 from depth_anything_3.utils.geometry import mat_to_quat
-
 
 # =============================================================================
 # Geometry Utilities

@@ -27,6 +27,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
+
 def create_depth_visualization(depth: np.ndarray) -> Optional[np.ndarray]:
     """
     Create a colored depth visualization.

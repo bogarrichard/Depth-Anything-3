@@ -24,8 +24,8 @@ Evaluation metrics:
 """
 
 import os
-from typing import Dict as TDict, List
-
+from typing import Dict as TDict
+from typing import List
 import cv2
 import numpy as np
 import open3d as o3d
@@ -56,7 +56,7 @@ from depth_anything_3.utils.pose_align import align_poses_umeyama
 def _load_scene_list() -> List[str]:
     """Load scene list from file."""
     if os.path.exists(HIROOM_SCENE_LIST_PATH):
-        with open(HIROOM_SCENE_LIST_PATH, "r") as f:
+        with open(HIROOM_SCENE_LIST_PATH) as f:
             return f.read().splitlines()
     return []
 

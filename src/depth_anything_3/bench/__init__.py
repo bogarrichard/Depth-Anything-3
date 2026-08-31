@@ -30,7 +30,7 @@ Supported evaluation modes:
 - recon_posed: 3D reconstruction with ground truth poses
 """
 
-from depth_anything_3.bench.registries import MV_REGISTRY, MONO_REGISTRY
+from depth_anything_3.bench.registries import MONO_REGISTRY, MV_REGISTRY
 
 
 def __getattr__(name):

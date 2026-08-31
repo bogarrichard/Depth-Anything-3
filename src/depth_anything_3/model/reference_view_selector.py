@@ -19,9 +19,8 @@ This module provides different strategies for selecting a reference view
 from multiple input views in multi-view depth estimation.
 """
 
-import torch
 from typing import Literal
-
+import torch
 
 RefViewStrategy = Literal["first", "middle", "saddle_balanced", "saddle_sim_range"]
 

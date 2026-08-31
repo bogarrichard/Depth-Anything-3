@@ -21,7 +21,8 @@ inference, and export capabilities. It supports both single and nested model arc
 from __future__ import annotations
 
 import time
-from typing import Optional, Sequence
+from collections.abc import Sequence
+from typing import Optional
 import numpy as np
 import torch
 import torch.nn as nn
