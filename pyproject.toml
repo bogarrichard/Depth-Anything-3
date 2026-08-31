@@ -42,16 +42,25 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit"]
+dev = ["pre-commit", "pytest>=8", "hypothesis>=6"]
 # open3d is used only under src/depth_anything_3/bench/ and has no wheels for
 # Python 3.13. Keeping it out of the core install lets the package itself run
 # on 3.13.
-bench = ["open3d"]
+bench = ["open3d", "scikit-learn"]
 app = ["gradio>=5", "pillow>=9.0"]
 gs = ["gsplat>=1.5,<2"]
 # da3_streaming/: long-video / large-scene streaming pipeline. einops and
 # safetensors are already core dependencies, so only the rest are listed.
-streaming = ["faiss-gpu", "pandas", "prettytable", "numba", "pypose", "rich"]
+streaming = [
+    "faiss-gpu",
+    "numba",
+    "pandas",
+    "prettytable",
+    "pypose",
+    "pyyaml",
+    "rich",
+    "scikit-learn",
+]
 all = ["depth-anything-3[app,bench,gs,streaming]"]
 
 
@@ -109,3 +118,9 @@ keep-runtime-typing = true
 known-first-party = ["depth_anything_3"]
 # Matches the previous isort `no_lines_before = "THIRDPARTY"`.
 no-lines-before = ["third-party"]
+
+[tool.pytest.ini_options]
+# tests/ is on sys.path so conftest helpers can be imported directly.
+pythonpath = ["tests"]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"

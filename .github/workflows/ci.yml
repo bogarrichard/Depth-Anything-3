@@ -20,9 +20,9 @@ jobs:
         with:
           enable-cache: true
       - name: ruff check
-        run: uvx ruff check src da3_streaming
+        run: uvx ruff check src da3_streaming tests
       - name: ruff format --check
-        run: uvx ruff format --check src da3_streaming
+        run: uvx ruff format --check src da3_streaming tests
 
   lock:
     name: lockfile is current
@@ -72,3 +72,31 @@ jobs:
             echo "--- da3 $cmd --help"
             uv run --python ${{ matrix.python }} da3 "$cmd" --help > /dev/null
           done
+
+  test:
+    name: tests (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          df -h /
+      # bench is included so the scikit-learn/open3d code paths are installable;
+      # open3d has no 3.13 wheels, so that extra is only added on 3.10.
+      - name: Install
+        run: |
+          if [ "${{ matrix.python }}" = "3.10" ]; then
+            uv sync --python ${{ matrix.python }} --extra dev --extra bench
+          else
+            uv sync --python ${{ matrix.python }} --extra dev
+          fi
+      - name: pytest
+        run: uv run --python ${{ matrix.python }} python -m pytest
