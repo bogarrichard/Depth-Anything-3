@@ -40,7 +40,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pre-commit"]
 app = ["gradio>=5", "pillow>=9.0"] # requires that python3>=3.10
-gs = ["gsplat @ git+https://github.com/nerfstudio-project/gsplat.git@0b4dddf04cb687367602c01196913cde6a743d70"]
+gs = ["gsplat>=1.5,<2"]
 all = ["depth-anything-3[app,gs]"]
 
 
