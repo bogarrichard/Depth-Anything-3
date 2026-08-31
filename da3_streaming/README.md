@@ -38,7 +38,7 @@ git submodule update --init --recursive .
 Install `Depth-Anything-3` first.
 
 ```cmd
-pip install -r requirements.txt
+pip install -e ".[streaming]"
 ```
 
 #### Step 2: Weights Download

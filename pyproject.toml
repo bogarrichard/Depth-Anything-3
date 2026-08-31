@@ -41,7 +41,10 @@ dependencies = [
 dev = ["pre-commit"]
 app = ["gradio>=5", "pillow>=9.0"]
 gs = ["gsplat>=1.5,<2"]
-all = ["depth-anything-3[app,gs]"]
+# da3_streaming/: long-video / large-scene streaming pipeline. einops and
+# safetensors are already core dependencies, so only the rest are listed.
+streaming = ["faiss-gpu", "pandas", "prettytable", "numba", "pypose"]
+all = ["depth-anything-3[app,gs,streaming]"]
 
 
 [project.scripts]
@@ -68,6 +71,11 @@ allow-direct-references = true
 
 [tool.mypy]
 plugins = ["jaxtyping.mypy_plugin"]
+
+[tool.uv]
+# Resolve the right torch wheel per machine at install time (cpu / cu126 /
+# ...) instead of baking one CUDA variant into the lockfile.
+torch-backend = "auto"
 
 [tool.ruff]
 line-length = 99

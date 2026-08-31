@@ -85,12 +85,25 @@ We introduce a new benchmark to rigorously evaluate geometry prediction models o
 
 ### 📦 Installation
 
+With [uv](https://docs.astral.sh/uv/) (installs from the lockfile, so you get
+the exact resolved versions):
+
 ```bash
-pip install xformers torch\>=2 torchvision
-pip install -e . # Basic
-pip install --no-build-isolation git+https://github.com/nerfstudio-project/gsplat.git@0b4dddf04cb687367602c01196913cde6a743d70 # for gaussian head
-pip install -e ".[app]" # Gradio, python>=3.10
-pip install -e ".[all]" # ALL
+uv sync                  # Basic
+uv sync --extra app      # + Gradio app
+uv sync --extra gs       # + gaussian head (gsplat)
+uv sync --extra streaming  # + da3_streaming pipeline
+uv sync --all-extras     # ALL
+```
+
+Or with pip:
+
+```bash
+pip install -e .              # Basic
+pip install -e ".[app]"       # Gradio app
+pip install -e ".[gs]"        # gaussian head (gsplat)
+pip install -e ".[streaming]" # da3_streaming pipeline
+pip install -e ".[all]"       # ALL
 ```
 
 For detailed model information, please refer to the [Model Cards](#-model-cards) section below.
