@@ -131,10 +131,10 @@ def _render_task_card(task: "TaskStatus", css_class: str) -> str:
                     <div class="task-message">{e(task.message)}</div>
                     <div class="task-params">
                         <small>
-                            Images: {e(str(task.num_images)) if task.num_images is not None else 'N/A'} |
-                            Format: {e(task.export_format) if task.export_format else 'N/A'} |
-                            Method: {e(task.process_res_method) if task.process_res_method else 'N/A'} |
-                            Export Dir: {e(task.export_dir) if task.export_dir else 'N/A'}
+                            Images: {e(str(task.num_images)) if task.num_images is not None else "N/A"} |
+                            Format: {e(task.export_format) if task.export_format else "N/A"} |
+                            Method: {e(task.process_res_method) if task.process_res_method else "N/A"} |
+                            Export Dir: {e(task.export_dir) if task.export_dir else "N/A"}
                         </small>
                         {video_row}
                     </div>
@@ -391,7 +391,7 @@ def _run_inference_task(task_id: str):
         _tasks[task_id].status = "completed"
         _tasks[task_id].completed_at = time.time()
         _tasks[task_id].message = (
-            f"[{task_id}] Completed in {total_time:.2f}s " f"({avg_time_per_image:.2f}s per image)"
+            f"[{task_id}] Completed in {total_time:.2f}s ({avg_time_per_image:.2f}s per image)"
         )
         _tasks[task_id].progress = 1.0
         _tasks[task_id].export_dir = request.export_dir
@@ -1156,17 +1156,17 @@ def create_app(
                 <h3>Model Status</h3>
                 <div class="status-item">
                     <span>Status:</span>
-                    <span class="status-value {'status-online' if status['model_loaded'] else 'status-offline'}">
-                        {'Online' if status['model_loaded'] else 'Offline'}
+                    <span class="status-value {"status-online" if status["model_loaded"] else "status-offline"}">
+                        {"Online" if status["model_loaded"] else "Offline"}
                     </span>
                 </div>
                 <div class="status-item">
                     <span>Model Directory:</span>
-                    <span class="status-value">{html.escape(str(status['model_dir']))}</span>
+                    <span class="status-value">{html.escape(str(status["model_dir"]))}</span>
                 </div>
                 <div class="status-item">
                     <span>Device:</span>
-                    <span class="status-value">{html.escape(str(status['device']))}</span>
+                    <span class="status-value">{html.escape(str(status["device"]))}</span>
                 </div>
                 <div class="status-item">
                     <span>Load Time:</span>
@@ -1201,7 +1201,7 @@ def create_app(
             <label class="auto-refresh">
                 <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()"> Auto-refresh (5s)
             </label>
-            <div class="timestamp">Last updated: <span id="lastUpdate">{time.strftime('%Y-%m-%d %H:%M:%S')}</span></div>
+            <div class="timestamp">Last updated: <span id="lastUpdate">{time.strftime("%Y-%m-%d %H:%M:%S")}</span></div>
 
             {active_tasks_html}
         </div>
@@ -1345,7 +1345,9 @@ def create_app(
             "status": (
                 "healthy"
                 if gpu_memory["utilization"] < 80
-                else "warning" if gpu_memory["utilization"] < 95 else "critical"
+                else "warning"
+                if gpu_memory["utilization"] < 95
+                else "critical"
             ),
         }
 

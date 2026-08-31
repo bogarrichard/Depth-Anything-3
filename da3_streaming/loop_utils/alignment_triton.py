@@ -515,7 +515,6 @@ def print_gpu_memory():
 
 
 if __name__ == "__main__":
-
     warmup_triton()
 
     n_points = 7_500_000

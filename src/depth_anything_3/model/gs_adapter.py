@@ -25,7 +25,6 @@ from depth_anything_3.utils.sh_helpers import rotate_sh
 
 
 class GaussianAdapter(nn.Module):
-
     def __init__(
         self,
         sh_degree: int = 0,

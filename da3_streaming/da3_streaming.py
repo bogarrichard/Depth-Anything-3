@@ -544,7 +544,7 @@ class DA3_Streaming:
 
             if chunk_idx > 0:
                 print(
-                    f"Aligning {chunk_idx-1} and {chunk_idx} (Total {len(self.chunk_indices)-1})"
+                    f"Aligning {chunk_idx - 1} and {chunk_idx} (Total {len(self.chunk_indices) - 1})"
                 )
                 chunk_data1 = pre_predictions
                 chunk_data2 = cur_predictions
@@ -626,11 +626,11 @@ class DA3_Streaming:
         print("Apply alignment")
         self.sim3_list = accumulate_sim3_transforms(self.sim3_list)
         for chunk_idx in range(len(self.chunk_indices) - 1):
-            print(f"Applying {chunk_idx+1} -> {chunk_idx} (Total {len(self.chunk_indices)-1})")
+            print(f"Applying {chunk_idx + 1} -> {chunk_idx} (Total {len(self.chunk_indices) - 1})")
             s, R, t = self.sim3_list[chunk_idx]
 
             chunk_data = np.load(
-                os.path.join(self.result_unaligned_dir, f"chunk_{chunk_idx+1}.npy"),
+                os.path.join(self.result_unaligned_dir, f"chunk_{chunk_idx + 1}.npy"),
                 allow_pickle=True,
             ).item()
 
@@ -646,7 +646,7 @@ class DA3_Streaming:
             aligned_chunk_data["conf"] = chunk_data.conf
             aligned_chunk_data["images"] = chunk_data.processed_images
 
-            aligned_path = os.path.join(self.result_aligned_dir, f"chunk_{chunk_idx+1}.npy")
+            aligned_path = os.path.join(self.result_aligned_dir, f"chunk_{chunk_idx + 1}.npy")
             np.save(aligned_path, aligned_chunk_data)
 
             if chunk_idx == 0:
@@ -678,7 +678,7 @@ class DA3_Streaming:
             points = aligned_chunk_data["world_points"].reshape(-1, 3)
             colors = (aligned_chunk_data["images"].reshape(-1, 3)).astype(np.uint8)
             confs = aligned_chunk_data["conf"].reshape(-1)
-            ply_path = os.path.join(self.pcd_dir, f"{chunk_idx+1}_pcd.ply")
+            ply_path = os.path.join(self.pcd_dir, f"{chunk_idx + 1}_pcd.ply")
             save_confident_pointcloud_batch(
                 points=points,  # shape: (H, W, 3)
                 colors=colors,  # shape: (H, W, 3)
@@ -856,7 +856,7 @@ class DA3_Streaming:
                 os.remove(file_path)
         print("Deleting temp files done.")
 
-        print(f"Saved disk space: {total_space/1024/1024/1024:.4f} GiB")
+        print(f"Saved disk space: {total_space / 1024 / 1024 / 1024:.4f} GiB")
 
 
 def copy_file(src_path, dst_dir):
@@ -878,7 +878,6 @@ def copy_file(src_path, dst_dir):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="DA3-Streaming")
     parser.add_argument("--image_dir", type=str, required=True, help="Image path")
     parser.add_argument(

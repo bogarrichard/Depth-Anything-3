@@ -203,9 +203,7 @@ class MetricsPrinter:
                 # Find best/worst
                 valid_values = [v for v in values if not (v != v)]  # Filter NaN
                 if valid_values:
-                    lower_better = any(
-                        lb in metric_name.lower() for lb in self.LOWER_IS_BETTER
-                    )
+                    lower_better = any(lb in metric_name.lower() for lb in self.LOWER_IS_BETTER)
                     best_val = min(valid_values) if lower_better else max(valid_values)
                     worst_val = max(valid_values) if lower_better else min(valid_values)
                 else:
@@ -324,14 +322,10 @@ class MetricsPrinter:
                     if self.use_color and len(valid_values) > 1:
                         is_best = abs(val - best_val) < 1e-8 if best_val else False
                         is_worst = abs(val - worst_val) < 1e-8 if worst_val else False
-                        lower_better = any(
-                            lb in metric.lower() for lb in self.LOWER_IS_BETTER
-                        )
+                        lower_better = any(lb in metric.lower() for lb in self.LOWER_IS_BETTER)
                         # Pad before colorizing to maintain alignment
                         val_str_padded = f"{val_str:<{mode_width}}"
-                        row += colorize_value(
-                            val_str_padded, is_best, is_worst, lower_better
-                        )
+                        row += colorize_value(val_str_padded, is_best, is_worst, lower_better)
                     else:
                         row += f"{val_str:<{mode_width}}"
             print(row)
@@ -398,11 +392,11 @@ class MetricsPrinter:
 
         # ============ POSE METRICS ============
         print(f"\n{Colors.BOLD_MAGENTA}🎯 POSE ESTIMATION{Colors.RESET}")
-        
+
         # Pose: show all datasets except DTU (keep DTU-64 only)
         # Order: HiRoom, ETH3D, DTU-64, 7Scenes, ScanNet++
         pose_datasets = ["hiroom", "eth3d", "dtu64", "7scenes", "scannetpp"]
-        
+
         # Header: Avg first, then datasets
         header = f"{'Metric':<15}{'Avg':<{col_width}}"
         for ds in pose_datasets:
@@ -453,11 +447,11 @@ class MetricsPrinter:
 
         # ============ RECON_UNPOSED METRICS ============
         print(f"\n{Colors.BOLD_MAGENTA}🏗️  RECON_UNPOSED (Pred Pose){Colors.RESET}")
-        
+
         # For recon, exclude dtu64 from columns
         recon_datasets = ["hiroom", "eth3d", "dtu", "7scenes", "scannetpp"]
         avg_datasets = ["hiroom", "eth3d", "7scenes", "scannetpp"]  # Exclude DTU from avg
-        
+
         # Header: Avg first, then datasets
         header = f"{'Metric':<15}{'Avg*':<{col_width}}"
         for ds in recon_datasets:
@@ -494,7 +488,7 @@ class MetricsPrinter:
 
         # ============ RECON_POSED METRICS ============
         print(f"\n{Colors.BOLD_MAGENTA}🏗️  RECON_POSED (GT Pose){Colors.RESET}")
-        
+
         # Header: Avg first, then datasets
         header = f"{'Metric':<15}{'Avg*':<{col_width}}"
         for ds in recon_datasets:
@@ -529,7 +523,9 @@ class MetricsPrinter:
             row += f"{fmt_val(val):<{col_width}}"
         print(row)
 
-        print(f"\n{Colors.CYAN}* Avg F-score / Overall = average over HiRoom, ETH3D, 7Scenes, ScanNet++ (4 datasets){Colors.RESET}")
+        print(
+            f"\n{Colors.CYAN}* Avg F-score / Overall = average over HiRoom, ETH3D, 7Scenes, ScanNet++ (4 datasets){Colors.RESET}"
+        )
 
 
 def load_metrics_from_dir(metric_dir: str) -> dict[str, dict]:
@@ -614,4 +610,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -698,7 +698,6 @@ def robust_weighted_estimate_sim3(
     prev_error = float("inf")
 
     for iter in range(max_iters):
-
         transformed = s * (src @ R.T) + t
         residuals = np.linalg.norm(tgt - transformed, axis=1)  # (N,)
         print(f"Residuals: {np.mean(residuals)}")

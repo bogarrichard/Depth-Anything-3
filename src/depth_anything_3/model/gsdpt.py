@@ -21,7 +21,6 @@ from depth_anything_3.model.utils.head_utils import activate_head_gs, custom_int
 
 
 class GSDPT(DPT):
-
     def __init__(
         self,
         dim_in: int,
@@ -55,9 +54,9 @@ class GSDPT(DPT):
         )
         self.conf_dim = conf_dim
         if conf_dim and conf_dim > 1:
-            assert (
-                conf_activation == "linear"
-            ), "use linear prediction when using view-dependent opacity"
+            assert conf_activation == "linear", (
+                "use linear prediction when using view-dependent opacity"
+            )
 
         merger_out_dim = features if feature_only else features // 2
         self.images_merger = nn.Sequential(

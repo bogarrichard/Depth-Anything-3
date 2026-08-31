@@ -4,6 +4,7 @@ GPU memory utility helpers.
 Shared cleanup and memory checking logic used by both the backend API and
 the Gradio UI to keep memory-management behavior consistent.
 """
+
 from __future__ import annotations
 
 import gc
@@ -27,10 +28,10 @@ def get_gpu_memory_info() -> Optional[dict[str, Any]]:
         free_memory = total_memory - reserved_memory
 
         return {
-            "total_gb": total_memory / 1024 ** 3,
-            "allocated_gb": allocated_memory / 1024 ** 3,
-            "reserved_gb": reserved_memory / 1024 ** 3,
-            "free_gb": free_memory / 1024 ** 3,
+            "total_gb": total_memory / 1024**3,
+            "allocated_gb": allocated_memory / 1024**3,
+            "reserved_gb": reserved_memory / 1024**3,
+            "free_gb": free_memory / 1024**3,
             "utilization": (reserved_memory / total_memory) * 100,
         }
     except Exception:
@@ -105,6 +106,8 @@ def check_memory_availability(required_gb: float = 2.0) -> tuple[bool, str]:
         )
     except Exception as e:
         return True, f"Memory check failed: {e}, proceeding anyway"
+
+
 def estimate_memory_requirement(num_images: int, process_res: int) -> float:
     """Heuristic estimate for memory usage (GB) based on image count and resolution.
 

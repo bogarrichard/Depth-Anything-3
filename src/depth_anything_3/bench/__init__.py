@@ -37,9 +37,9 @@ def __getattr__(name):
     """Lazy import to avoid circular import when running as __main__."""
     if name == "Evaluator":
         from depth_anything_3.bench.evaluator import Evaluator
+
         return Evaluator
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 __all__ = ["Evaluator", "MV_REGISTRY", "MONO_REGISTRY"]
-

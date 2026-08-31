@@ -294,7 +294,7 @@ class Sim3LoopOptimizer:
 
             print(
                 f"Time of solver ({self.solve_system_version}): \
-                    {(end_time - begin_time)*1000:.4f} ms"
+                    {(end_time - begin_time) * 1000:.4f} ms"
             )
 
             if (current_cost < 1e-5) and (itr >= 4):

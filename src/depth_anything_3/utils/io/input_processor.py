@@ -412,7 +412,9 @@ if __name__ == "__main__":
         Ks_out: Sequence[np.ndarray | None] | None = None,
     ):
         B, N, C, H, W = tensor.shape
-        print(f"[{tag}] shape={tuple(tensor.shape)}  HxW=({H},{W})  div14=({H%14==0},{W%14==0})")
+        print(
+            f"[{tag}] shape={tuple(tensor.shape)}  HxW=({H},{W})  div14=({H % 14 == 0},{W % 14 == 0})"
+        )
         assert H % 14 == 0 and W % 14 == 0, f"{tag}: output size not divisible by 14!"
         if Ks_in is not None or Ks_out is not None:
             Ks_in = Ks_in or [None] * N

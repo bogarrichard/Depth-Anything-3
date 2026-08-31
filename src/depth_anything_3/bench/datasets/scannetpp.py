@@ -137,19 +137,23 @@ class ScanNetPP(Dataset):
             input_path.replace("merge_dslr_iphone", "scans"), "mesh_aligned_0.05.ply"
         )
 
-        out = Dict({
-            "image_files": [],
-            "extrinsics": [],
-            "intrinsics": [],
-            "aux": Dict({
-                "gt_mesh_path": gt_mesh_path,
-                "dist_list": [],
-                "roi_list": [],
-                "cam_hw_list": [],
-                "ixt_raw_list": [],
-                "gt_depth_files": [],
-            }),
-        })
+        out = Dict(
+            {
+                "image_files": [],
+                "extrinsics": [],
+                "intrinsics": [],
+                "aux": Dict(
+                    {
+                        "gt_mesh_path": gt_mesh_path,
+                        "dist_list": [],
+                        "roi_list": [],
+                        "cam_hw_list": [],
+                        "ixt_raw_list": [],
+                        "gt_depth_files": [],
+                    }
+                ),
+            }
+        )
 
         for name in names:
             image = images[name2id[name]]
@@ -218,13 +222,17 @@ class ScanNetPP(Dataset):
         """
         image = imageio.imread(img_path).astype(np.uint8)
         ixt_raw = aux.ixt_raw_list[idx]
-        ixt = aux.intrinsics[idx] if hasattr(aux, 'intrinsics') else None
+        ixt = aux.intrinsics[idx] if hasattr(aux, "intrinsics") else None
         dist = aux.dist_list[idx]
         roi = aux.roi_list[idx]
 
         # Undistort using raw intrinsics
         # Use the stored intrinsics from get_data for newCameraMatrix
-        stored_ixt = self._scene_cache.get(aux.scene, {}).get('intrinsics', [None])[idx] if hasattr(aux, 'scene') else None
+        stored_ixt = (
+            self._scene_cache.get(aux.scene, {}).get("intrinsics", [None])[idx]
+            if hasattr(aux, "scene")
+            else None
+        )
         if stored_ixt is None:
             # Recompute optimal camera matrix for undistortion
             cam_h, cam_w = aux.cam_hw_list[idx]
@@ -239,7 +247,7 @@ class ScanNetPP(Dataset):
 
         # Crop to ROI
         x, y, w, h = roi
-        image = image[y:y+h, x:x+w]
+        image = image[y : y + h, x : x + w]
 
         # Resize to target resolution
         image = cv2.resize(image, (self.input_w, self.input_h), interpolation=cv2.INTER_AREA)
@@ -273,12 +281,12 @@ class ScanNetPP(Dataset):
         aabb = gt_pcd.get_axis_aligned_bounding_box()
         points = np.asarray(pred_pcd.points)
         inside_mask = (
-            (points[:, 0] >= aabb.min_bound[0] - 0.1) &
-            (points[:, 0] <= aabb.max_bound[0] + 0.1) &
-            (points[:, 1] >= aabb.min_bound[1] - 0.1) &
-            (points[:, 1] <= aabb.max_bound[1] + 0.1) &
-            (points[:, 2] >= aabb.min_bound[2] - 0.1) &
-            (points[:, 2] <= aabb.max_bound[2] + 0.1)
+            (points[:, 0] >= aabb.min_bound[0] - 0.1)
+            & (points[:, 0] <= aabb.max_bound[0] + 0.1)
+            & (points[:, 1] >= aabb.min_bound[1] - 0.1)
+            & (points[:, 1] <= aabb.max_bound[1] + 0.1)
+            & (points[:, 2] >= aabb.min_bound[2] - 0.1)
+            & (points[:, 2] <= aabb.max_bound[2] + 0.1)
         )
         pred_pcd = pred_pcd.select_by_index(inside_mask.nonzero()[0])
 
@@ -336,11 +344,13 @@ class ScanNetPP(Dataset):
             image_files = list(data["image_files"])
 
             # Reconstruct aux data from image files
-            return Dict({
-                "extrinsics": data["extrinsics"],
-                "intrinsics": data["intrinsics"],
-                "image_files": image_files,
-            })
+            return Dict(
+                {
+                    "extrinsics": data["extrinsics"],
+                    "intrinsics": data["intrinsics"],
+                    "image_files": image_files,
+                }
+            )
         return None
 
     def fuse3d(self, scene: str, result_path: str, fuse_path: str, mode: str) -> None:
@@ -387,7 +397,7 @@ class ScanNetPP(Dataset):
 
             image = cv2.undistort(image, ixt_raw, dist, newCameraMatrix=ixt)
             x, y, w, h = roi
-            image = image[y:y+h, x:x+w]
+            image = image[y : y + h, x : x + w]
             image = cv2.resize(image, (self.input_w, self.input_h), interpolation=cv2.INTER_AREA)
 
             images.append(image)
@@ -427,8 +437,12 @@ class ScanNetPP(Dataset):
     # ------------------------------
 
     def _prep_unposed(
-        self, pred_data: Dict, gt_data: Dict, full_gt_data: Dict,
-        image_indices: list, scene: str = None
+        self,
+        pred_data: Dict,
+        gt_data: Dict,
+        full_gt_data: Dict,
+        image_indices: list,
+        scene: str = None,
     ) -> tuple:
         """Prepare depths/intrinsics/extrinsics for recon_unposed mode."""
         # Scale alignment with fixed random_state for reproducibility
@@ -486,8 +500,12 @@ class ScanNetPP(Dataset):
         return np.stack(depths_out), np.stack(intrinsics_out), extrinsics
 
     def _prep_posed(
-        self, pred_data: Dict, gt_data: Dict, full_gt_data: Dict,
-        image_indices: list, scene: str = None
+        self,
+        pred_data: Dict,
+        gt_data: Dict,
+        full_gt_data: Dict,
+        image_indices: list,
+        scene: str = None,
     ) -> tuple:
         """Prepare depths/intrinsics/extrinsics for recon_posed mode."""
         # Scale alignment
@@ -586,4 +604,3 @@ class ScanNetPP(Dataset):
             depth[invalid_mask] = 0.0
 
         return depth
-

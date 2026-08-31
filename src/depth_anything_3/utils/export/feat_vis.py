@@ -59,14 +59,20 @@ def export_to_feat_vis(
             imageio.imwrite(save_path, save, quality=95)
         cmd = [
             "ffmpeg",
-            "-loglevel", "error",
+            "-loglevel",
+            "error",
             "-hide_banner",
             "-y",
-            "-framerate", str(fps),
-            "-start_number", "0",
-            "-i", os.path.join(out_dir, k, "%06d.jpg"),
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
+            "-framerate",
+            str(fps),
+            "-start_number",
+            "0",
+            "-i",
+            os.path.join(out_dir, k, "%06d.jpg"),
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
             os.path.join(out_dir, f"{k}.mp4"),
         ]
         try:

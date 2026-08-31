@@ -97,9 +97,9 @@ class DepthAnything3App:
             print("No example scenes found to cache.")
             return
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Caching {len(scenes)} example scenes...")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         for i, scene in enumerate(scenes, 1):
             scene_name = scene["name"]

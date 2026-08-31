@@ -82,4 +82,3 @@ METRIC_REGISTRY = AutoRegistry()  # For metric depth evaluation
 MONO_REGISTRY = AutoRegistry()  # For monocular depth evaluation
 MV_REGISTRY = AutoRegistry()  # For multi-view evaluation
 NVS_REGISTRY = AutoRegistry()  # For novel view synthesis evaluation
-

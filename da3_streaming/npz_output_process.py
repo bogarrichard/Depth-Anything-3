@@ -31,9 +31,9 @@ def create_point_cloud(npz_folder, pose_file, output_ply, conf_threshold_coef, s
 
     print(f"Found {len(npz_files)} .npz files")
 
-    assert len(poses) == len(
-        npz_files
-    ), f"Pose file has {len(poses)} lines, but npz folder has {len(npz_files)} files"
+    assert len(poses) == len(npz_files), (
+        f"Pose file has {len(poses)} lines, but npz folder has {len(npz_files)} files"
+    )
 
     all_points = []
     all_colors = []

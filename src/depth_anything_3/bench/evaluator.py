@@ -168,7 +168,9 @@ class Evaluator:
         # Distribute tasks across GPUs
         if self.total_gpus > 1:
             tasks = [t for i, t in enumerate(all_tasks) if i % self.total_gpus == self.gpu_id]
-            print(f"[INFO] GPU {self.gpu_id}/{self.total_gpus}: {len(tasks)}/{len(all_tasks)} tasks")
+            print(
+                f"[INFO] GPU {self.gpu_id}/{self.total_gpus}: {len(tasks)}/{len(all_tasks)} tasks"
+            )
         else:
             tasks = all_tasks
             print(f"[INFO] Total inference tasks: {len(tasks)}")
@@ -203,7 +205,7 @@ class Evaluator:
     def eval(self) -> dict[str, dict]:
         """
         Evaluate for all configured modes and write JSON files.
-        
+
         Evaluation order by mode (all datasets per mode):
         1. pose - all datasets
         2. recon_unposed - all datasets
@@ -216,23 +218,23 @@ class Evaluator:
 
         # Evaluate by mode (all datasets per mode)
         if "pose" in self.modes:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print("📊 Evaluating POSE for all datasets...")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             for data, result in self._eval_pose():
                 summary[f"{data}_pose"] = result
 
         if "recon_unposed" in self.modes:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print("📊 Evaluating RECON_UNPOSED for all datasets...")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             for data, result in self._eval_reconstruction("recon_unposed"):
                 summary[f"{data}_recon_unposed"] = result
 
         if "recon_posed" in self.modes:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print("📊 Evaluating RECON_POSED for all datasets...")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             for data, result in self._eval_reconstruction("recon_posed"):
                 summary[f"{data}_recon_posed"] = result
 
@@ -268,14 +270,14 @@ class Evaluator:
             for scene in tqdm(scenes, desc=f"{data} scenes", leave=False):
                 export_dir = self._export_dir(data, scene, posed=False)
                 result_path = os.path.join(export_dir, "exports", "mini_npz", "results.npz")
-                
+
                 # Check if result file exists and is valid
                 if not os.path.exists(result_path):
                     print(f"\n[ERROR] Result file not found: {result_path}")
                     print(f"[ERROR] CWD: {os.getcwd()}")
                     print("[ERROR] Please run inference first (remove --eval_only)")
                     continue
-                
+
                 try:
                     # Use saved GT meta (handles frame sampling correctly)
                     gt_meta = self._load_gt_meta(export_dir)
@@ -290,13 +292,14 @@ class Evaluator:
                     print(f"[ERROR] File path: {os.path.abspath(result_path)}")
                     if self.debug:
                         import traceback
+
                         traceback.print_exc()
                     continue
 
             if not dataset_results:
                 print(f"[WARNING] No valid results for {data}")
                 continue
-                
+
             dataset_results["mean"] = self._mean_of_dicts(dataset_results.values())
             out_path = os.path.join(self._metric_dir, f"{data}_pose.json")
             self._dump_json(out_path, dataset_results)
@@ -313,7 +316,7 @@ class Evaluator:
         os.makedirs(self._metric_dir, exist_ok=True)
 
         posed_flag = mode == "recon_posed"
-        
+
         # Filter out datasets that don't support reconstruction (e.g., dtu64)
         recon_datas = [d for d in self.datas if d != "dtu64"]
 
@@ -336,7 +339,7 @@ class Evaluator:
 
             # Parallel fusion (default 4 workers)
             # DTU uses CUDA operations in fusion, which doesn't work well with ThreadPool
-            use_sequential = (data == "dtu")
+            use_sequential = data == "dtu"
             parallel_execution(
                 scene_list,
                 result_paths,
@@ -395,10 +398,12 @@ class Evaluator:
         meta_path = os.path.join(export_dir, "exports", "gt_meta.npz")
         if os.path.exists(meta_path):
             data = np.load(meta_path)
-            return Dict({
-                "extrinsics": data["extrinsics"],
-                "intrinsics": data["intrinsics"],
-            })
+            return Dict(
+                {
+                    "extrinsics": data["extrinsics"],
+                    "intrinsics": data["intrinsics"],
+                }
+            )
         return None
 
     def _compute_pose_with_gt(self, result_path: str, gt_meta: Dict) -> dict[str, float]:
@@ -447,7 +452,7 @@ class Evaluator:
         random.seed(42)
         indices = list(range(num_frames))
         random.shuffle(indices)
-        sampled_indices = sorted(indices[:self.max_frames])
+        sampled_indices = sorted(indices[: self.max_frames])
 
         print(f"  [Sampling] {scene}: {num_frames} -> {self.max_frames} frames")
 
@@ -537,9 +542,7 @@ if __name__ == "__main__":
     from depth_anything_3.cfg import load_config
 
     # Get default config path (relative to this file)
-    _default_config = os.path.join(
-        os.path.dirname(__file__), "configs", "eval_bench.yaml"
-    )
+    _default_config = os.path.join(os.path.dirname(__file__), "configs", "eval_bench.yaml")
 
     # Check for help flag first (we need to handle this before OmegaConf)
     if "--help" in sys.argv or "-h" in sys.argv:
@@ -555,7 +558,7 @@ if __name__ == "__main__":
         if config_idx + 1 < len(argv):
             config_path = argv[config_idx + 1]
             # Remove --config and its value
-            argv = argv[:config_idx] + argv[config_idx + 2:]
+            argv = argv[:config_idx] + argv[config_idx + 2 :]
 
     # Print help if requested
     if "--help" in sys.argv or "-h" in sys.argv:
@@ -748,4 +751,3 @@ Examples:
             if not is_worker:
                 metrics = evaluator.eval()
                 evaluator.print_metrics(metrics)
-

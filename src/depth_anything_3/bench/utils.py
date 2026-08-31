@@ -430,9 +430,7 @@ def compare_translation_by_angle(
     return err_t
 
 
-def calculate_auc_np(
-    r_error: np.ndarray, t_error: np.ndarray, max_threshold: int = 30
-) -> tuple:
+def calculate_auc_np(r_error: np.ndarray, t_error: np.ndarray, max_threshold: int = 30) -> tuple:
     """
     Calculate the Area Under the Curve (AUC) for the given error arrays.
 
@@ -520,4 +518,3 @@ def closed_form_inverse_se3(
     inverted_matrix[:, :3, 3:] = top_right
 
     return inverted_matrix
-

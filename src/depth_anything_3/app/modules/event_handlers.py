@@ -350,7 +350,9 @@ class EventHandlers:
             input_video, input_images, s_time_interval
         )
 
-    def load_example_scene(self, scene_name: str, examples_dir: str = None) -> tuple[
+    def load_example_scene(
+        self, scene_name: str, examples_dir: str = None
+    ) -> tuple[
         Optional[str],
         Optional[str],
         Optional[list],
@@ -404,7 +406,9 @@ class EventHandlers:
                             "image": predictions["images"][i] if "images" in predictions else None,
                             "depth": predictions["depths"][i] if "depths" in predictions else None,
                             "depth_image": os.path.join(
-                                target_dir, "depth_vis", f"{i:04d}.jpg"  # Fixed: use .jpg not .png
+                                target_dir,
+                                "depth_vis",
+                                f"{i:04d}.jpg",  # Fixed: use .jpg not .png
                             ),
                             "intrinsics": (
                                 predictions["intrinsics"][i]

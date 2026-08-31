@@ -348,13 +348,16 @@ def map_pdf_to_opacity(
     # Map the probability density to an opacity.
     return 0.5 * (1 - (1 - pdf) ** exponent + pdf ** (1 / exponent))
 
+
 def normalize_homogenous_points(points):
     """Normalize the point vectors"""
     return points / points[..., -1:]
 
+
 def inverse_intrinsic_matrix(ixts):
     """ """
     return torch.inverse(ixts)
+
 
 def pixel_space_to_camera_space(pixel_space_points, depth, intrinsics):
     """

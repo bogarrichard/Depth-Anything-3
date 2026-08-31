@@ -51,7 +51,6 @@ def reduce_edges(flow_mag, ii, jj, max_num_edges, nms):
 
     idxs = np.argsort(flow_mag)
     for idx in idxs:  # edge index
-
         if len(es) > max_num_edges:
             break
 

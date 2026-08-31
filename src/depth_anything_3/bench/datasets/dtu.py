@@ -85,7 +85,9 @@ class DTU(Dataset):
         with open(filename) as f:
             lines = [line.rstrip() for line in f.readlines()]
         extrinsics = np.fromstring(" ".join(lines[1:5]), dtype=np.float32, sep=" ").reshape((4, 4))
-        intrinsics = np.fromstring(" ".join(lines[7:10]), dtype=np.float32, sep=" ").reshape((3, 3))
+        intrinsics = np.fromstring(" ".join(lines[7:10]), dtype=np.float32, sep=" ").reshape(
+            (3, 3)
+        )
         return intrinsics, extrinsics
 
     def get_data(self, scene: str) -> Dict:
@@ -239,9 +241,7 @@ class DTU(Dataset):
     # Geometry helpers
     # ------------------------------
 
-    def _generate_points_from_depth(
-        self, depth: torch.Tensor, proj: torch.Tensor
-    ) -> torch.Tensor:
+    def _generate_points_from_depth(self, depth: torch.Tensor, proj: torch.Tensor) -> torch.Tensor:
         """
         Back-project depth map into 3D world coordinates.
 
@@ -554,12 +554,10 @@ class DTU(Dataset):
             self.data_root, "depth_raw", "Depths", scene, f"depth_visual_{depth_idx:04d}.png"
         )
 
-    def _prep_unposed(
-        self, pred_data: Dict, gt_data: Dict, masks: np.ndarray
-    ) -> tuple:
+    def _prep_unposed(self, pred_data: Dict, gt_data: Dict, masks: np.ndarray) -> tuple:
         """
         Prepare depths/intrinsics/extrinsics for recon_unposed mode.
-        
+
         Applies Umeyama scale, rescales intrinsics if depth resolution differs,
         and zeroes invalid-mask depths (nearest interpolation as in paper).
         """
@@ -588,9 +586,7 @@ class DTU(Dataset):
 
         return depths, intrinsics, extrinsics
 
-    def _prep_posed(
-        self, pred_data: Dict, gt_data: Dict, masks: np.ndarray
-    ) -> tuple:
+    def _prep_posed(self, pred_data: Dict, gt_data: Dict, masks: np.ndarray) -> tuple:
         """
         Prepare depths/intrinsics/extrinsics for recon_posed mode.
 
@@ -621,9 +617,7 @@ class DTU(Dataset):
 
         return depths, intrinsics, extrinsics
 
-    def _build_proj_mats(
-        self, intrinsics: np.ndarray, extrinsics: np.ndarray
-    ) -> np.ndarray:
+    def _build_proj_mats(self, intrinsics: np.ndarray, extrinsics: np.ndarray) -> np.ndarray:
         """Compute per-view 4x4 projection matrices from K and [R|t]."""
         proj_mat_list = []
         for i in range(len(intrinsics)):
@@ -676,4 +670,3 @@ class DTU(Dataset):
         rng = np.random.default_rng(seed=42)
         random_idx = rng.choice(len(points), max_points, replace=False)
         return points[random_idx]
-

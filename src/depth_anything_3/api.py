@@ -128,7 +128,13 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         with torch.no_grad():
             with torch.autocast(device_type=image.device.type, dtype=autocast_dtype):
                 return self.model(
-                    image, extrinsics, intrinsics, export_feat_layers, infer_gs, use_ray_pose, ref_view_strategy
+                    image,
+                    extrinsics,
+                    intrinsics,
+                    export_feat_layers,
+                    infer_gs,
+                    use_ray_pose,
+                    ref_view_strategy,
                 )
 
     def inference(
@@ -224,7 +230,6 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
 
         # Export if requested
         if export_dir is not None:
-
             if "gs" in export_format:
                 if infer_gs and "gs_video" not in export_format:
                     export_format = f"{export_format}-gs_video"
@@ -382,7 +387,9 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
             torch.cuda.synchronize(device)
         start_time = time.time()
         feat_layers = list(export_feat_layers) if export_feat_layers is not None else None
-        output = self.forward(imgs, ex_t, in_t, feat_layers, infer_gs, use_ray_pose, ref_view_strategy)
+        output = self.forward(
+            imgs, ex_t, in_t, feat_layers, infer_gs, use_ray_pose, ref_view_strategy
+        )
         if need_sync:
             torch.cuda.synchronize(device)
         end_time = time.time()

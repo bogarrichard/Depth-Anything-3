@@ -87,7 +87,9 @@ class DTU64(Dataset):
         # extrinsics: line [1,5), 4x4 matrix
         extrinsics = np.fromstring(" ".join(lines[1:5]), dtype=np.float32, sep=" ").reshape((4, 4))
         # intrinsics: line [7-10), 3x3 matrix
-        intrinsics = np.fromstring(" ".join(lines[7:10]), dtype=np.float32, sep=" ").reshape((3, 3))
+        intrinsics = np.fromstring(" ".join(lines[7:10]), dtype=np.float32, sep=" ").reshape(
+            (3, 3)
+        )
         return intrinsics, extrinsics
 
     # ------------------------------
@@ -120,12 +122,14 @@ class DTU64(Dataset):
         if len(files) > 33:
             files = [files[33]] + files[:33] + files[34:]
 
-        out = Dict({
-            "image_files": [],
-            "extrinsics": [],
-            "intrinsics": [],
-            "aux": Dict({}),
-        })
+        out = Dict(
+            {
+                "image_files": [],
+                "extrinsics": [],
+                "intrinsics": [],
+                "aux": Dict({}),
+            }
+        )
 
         for rgb_file in files:
             basename = os.path.basename(rgb_file)
@@ -177,4 +181,3 @@ class DTU64(Dataset):
             "3D reconstruction (fuse3d) is not supported. "
             "Use the standard 'dtu' dataset for 3D reconstruction."
         )
-

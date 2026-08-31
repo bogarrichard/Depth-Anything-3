@@ -131,4 +131,3 @@ class Dataset:
             mode: Fusion mode ("recon_unposed" or "recon_posed")
         """
         raise NotImplementedError
-
