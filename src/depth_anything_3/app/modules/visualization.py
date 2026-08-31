@@ -19,7 +19,7 @@ This module handles visualization updates, navigation, and measurement functiona
 """
 
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 import cv2
 import gradio as gr
 import numpy as np
@@ -34,8 +34,8 @@ class VisualizationHandler:
         """Initialize the visualization handler."""
 
     def update_view_selectors(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]]
-    ) -> Tuple[gr.Dropdown, gr.Dropdown]:
+        self, processed_data: Optional[dict[int, dict[str, Any]]]
+    ) -> tuple[gr.Dropdown, gr.Dropdown]:
         """
         Update view selector dropdowns based on available views.
 
@@ -57,8 +57,8 @@ class VisualizationHandler:
         )
 
     def get_view_data_by_index(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]], view_index: int
-    ) -> Optional[Dict[str, Any]]:
+        self, processed_data: Optional[dict[int, dict[str, Any]]], view_index: int
+    ) -> Optional[dict[str, Any]]:
         """
         Get view data by index, handling bounds.
 
@@ -79,7 +79,7 @@ class VisualizationHandler:
         return processed_data[view_keys[view_index]]
 
     def update_depth_view(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]], view_index: int
+        self, processed_data: Optional[dict[int, dict[str, Any]]], view_index: int
     ) -> Optional[str]:
         """
         Update depth view for a specific view index.
@@ -100,10 +100,10 @@ class VisualizationHandler:
 
     def navigate_depth_view(
         self,
-        processed_data: Optional[Dict[int, Dict[str, Any]]],
+        processed_data: Optional[dict[int, dict[str, Any]]],
         current_selector_value: str,
         direction: int,
-    ) -> Tuple[str, Optional[str]]:
+    ) -> tuple[str, Optional[str]]:
         """
         Navigate depth view (direction: -1 for previous, +1 for next).
 
@@ -133,8 +133,8 @@ class VisualizationHandler:
         return new_selector_value, depth_vis
 
     def update_measure_view(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]], view_index: int
-    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], List]:
+        self, processed_data: Optional[dict[int, dict[str, Any]]], view_index: int
+    ) -> tuple[Optional[np.ndarray], Optional[np.ndarray], list]:
         """
         Update measure view for a specific view index.
 
@@ -182,10 +182,10 @@ class VisualizationHandler:
 
     def navigate_measure_view(
         self,
-        processed_data: Optional[Dict[int, Dict[str, Any]]],
+        processed_data: Optional[dict[int, dict[str, Any]]],
         current_selector_value: str,
         direction: int,
-    ) -> Tuple[str, Optional[np.ndarray], Optional[str], List]:
+    ) -> tuple[str, Optional[np.ndarray], Optional[str], list]:
         """
         Navigate measure view (direction: -1 for previous, +1 for next).
 
@@ -217,8 +217,8 @@ class VisualizationHandler:
         return new_selector_value, measure_image, depth_right_half, measure_points
 
     def populate_visualization_tabs(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]]
-    ) -> Tuple[Optional[str], Optional[np.ndarray], Optional[str], List]:
+        self, processed_data: Optional[dict[int, dict[str, Any]]]
+    ) -> tuple[Optional[str], Optional[np.ndarray], Optional[str], list]:
         """
         Populate the depth and measure tabs with processed data.
 
@@ -238,8 +238,8 @@ class VisualizationHandler:
         return depth_vis, measure_img, depth_right_half, []
 
     def reset_measure(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]]
-    ) -> Tuple[Optional[np.ndarray], List, str]:
+        self, processed_data: Optional[dict[int, dict[str, Any]]]
+    ) -> tuple[Optional[np.ndarray], list, str]:
         """
         Reset measure points.
 
@@ -258,11 +258,11 @@ class VisualizationHandler:
 
     def measure(
         self,
-        processed_data: Optional[Dict[int, Dict[str, Any]]],
-        measure_points: List,
+        processed_data: Optional[dict[int, dict[str, Any]]],
+        measure_points: list,
         current_view_selector: str,
         event: gr.SelectData,
-    ) -> List:
+    ) -> list:
         """
         Handle measurement on images.
 

@@ -23,8 +23,6 @@ Note: DepthAnything3 was never trained on any images from DTU.
 
 import glob
 import os
-from typing import Dict as TDict
-from typing import List
 import numpy as np
 import open3d as o3d
 import torch
@@ -142,7 +140,7 @@ class DTU(Dataset):
         scene_id = int(scene[4:])
         return os.path.join(self.data_root, f"Points/stl/stl{scene_id:03}_total.ply")
 
-    def eval3d(self, scene: str, fuse_path: str, use_gpu: bool = False) -> TDict[str, float]:
+    def eval3d(self, scene: str, fuse_path: str, use_gpu: bool = False) -> dict[str, float]:
         """
         Evaluate fused point cloud against DTU GT with ObsMask/Plane.
 
@@ -167,7 +165,7 @@ class DTU(Dataset):
         )
         return {"comp": result[0], "acc": result[1], "overall": result[2]}
 
-    def load_masks(self, mask_files: List[str]) -> np.ndarray:
+    def load_masks(self, mask_files: list[str]) -> np.ndarray:
         """
         Load DTU depth validity masks.
 
@@ -213,7 +211,7 @@ class DTU(Dataset):
         proj_t = torch.from_numpy(proj_mat).to(device=device, dtype=dtype)
         height, width = depths_t.shape[-2:]
 
-        points: List[np.ndarray] = []
+        points: list[np.ndarray] = []
         for idx in range(len(gt_data.image_files)):
             if mode == "recon_unposed":
                 # Simple unfiltered back-projection per frame

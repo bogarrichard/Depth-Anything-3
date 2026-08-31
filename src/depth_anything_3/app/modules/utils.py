@@ -24,7 +24,7 @@ import json
 import os
 import shutil
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 import numpy as np
 
 
@@ -63,8 +63,8 @@ def create_depth_visualization(depth: np.ndarray) -> Optional[np.ndarray]:
 
 
 def save_to_gallery_func(
-    target_dir: str, processed_data: Dict[int, Dict[str, Any]], gallery_name: Optional[str] = None
-) -> Tuple[bool, str]:
+    target_dir: str, processed_data: dict[int, dict[str, Any]], gallery_name: Optional[str] = None
+) -> tuple[bool, str]:
     """
     Save the current reconstruction results to the gallery directory.
 
@@ -139,7 +139,7 @@ def save_to_gallery_func(
         return False, f"Save failed: {str(e)}"
 
 
-def get_scene_info(examples_dir: str) -> List[Dict[str, Any]]:
+def get_scene_info(examples_dir: str) -> list[dict[str, Any]]:
     """
     Get information about scenes in the examples directory.
 

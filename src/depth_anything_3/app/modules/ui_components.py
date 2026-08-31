@@ -19,7 +19,7 @@ This module contains UI component definitions and layout functions.
 """
 
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any
 import gradio as gr
 
 from depth_anything_3.app.modules.utils import get_logo_base64, get_scene_info
@@ -33,7 +33,7 @@ class UIComponents:
     def __init__(self):
         """Initialize the UI components handler."""
 
-    def create_upload_section(self) -> Tuple[gr.Video, gr.Slider, gr.File, gr.Gallery]:
+    def create_upload_section(self) -> tuple[gr.Video, gr.Slider, gr.File, gr.Gallery]:
         """
         Create the upload section with video, images, and gallery components.
 
@@ -79,7 +79,7 @@ class UIComponents:
             elem_id="reconstruction_3d_viewer",
         )
 
-    def create_nvs_video(self) -> Tuple[gr.Video, gr.Markdown]:
+    def create_nvs_video(self) -> tuple[gr.Video, gr.Markdown]:
         """
         Create the 3DGS rendered video display component and info message.
 
@@ -108,7 +108,7 @@ class UIComponents:
             )
         return gs_video, gs_info
 
-    def create_depth_section(self) -> Tuple[gr.Button, gr.Dropdown, gr.Button, gr.Image]:
+    def create_depth_section(self) -> tuple[gr.Button, gr.Dropdown, gr.Button, gr.Image]:
         """
         Create the depth visualization section.
 
@@ -137,7 +137,7 @@ class UIComponents:
 
     def create_measure_section(
         self,
-    ) -> Tuple[gr.Button, gr.Dropdown, gr.Button, gr.Image, gr.Image, gr.Markdown]:
+    ) -> tuple[gr.Button, gr.Dropdown, gr.Button, gr.Image, gr.Image, gr.Markdown]:
         """
         Create the measurement section.
 
@@ -195,7 +195,7 @@ class UIComponents:
             measure_text,
         )
 
-    def create_inference_control_section(self) -> Tuple[gr.Dropdown, gr.Checkbox, gr.Dropdown]:
+    def create_inference_control_section(self) -> tuple[gr.Dropdown, gr.Checkbox, gr.Dropdown]:
         """
         Create the inference control section (before inference).
 
@@ -232,7 +232,7 @@ class UIComponents:
 
     def create_display_control_section(
         self,
-    ) -> Tuple[
+    ) -> tuple[
         gr.Checkbox,
         gr.Checkbox,
         gr.Checkbox,
@@ -307,7 +307,7 @@ class UIComponents:
 
     def create_control_section(
         self,
-    ) -> Tuple[
+    ) -> tuple[
         gr.Button,
         gr.ClearButton,
         gr.Dropdown,
@@ -384,7 +384,7 @@ class UIComponents:
             gallery_name_input,
         )
 
-    def create_example_scenes_section(self) -> List[Dict[str, Any]]:
+    def create_example_scenes_section(self) -> list[dict[str, Any]]:
         """
         Create the example scenes section.
 
@@ -400,7 +400,7 @@ class UIComponents:
 
         return scenes
 
-    def create_example_scene_grid(self, scenes: List[Dict[str, Any]]) -> List[gr.Image]:
+    def create_example_scene_grid(self, scenes: list[dict[str, Any]]) -> list[gr.Image]:
         """
         Create the example scene grid.
 

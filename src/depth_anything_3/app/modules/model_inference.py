@@ -21,7 +21,7 @@ data processing, and result preparation.
 
 import glob
 import os
-from typing import Any, Dict, Tuple
+from typing import Any
 import numpy as np
 import torch
 
@@ -72,7 +72,7 @@ class ModelInference:
         ref_view_strategy: str = "saddle_balanced",
         gs_trj_mode: str = "extend",
         gs_video_quality: str = "high",
-    ) -> Tuple[Any, Dict[int, Dict[str, Any]]]:
+    ) -> tuple[Any, dict[int, dict[str, Any]]]:
         """
         Run DepthAnything3 model inference on images.
 
@@ -215,7 +215,7 @@ class ModelInference:
 
     def _process_results(
         self, target_dir: str, prediction: Any, image_paths: list
-    ) -> Dict[int, Dict[str, Any]]:
+    ) -> dict[int, dict[str, Any]]:
         """
         Process model results into structured data.
 

@@ -27,7 +27,7 @@ import secrets
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 from urllib.parse import quote
 import numpy as np
 import uvicorn
@@ -48,14 +48,14 @@ from ..utils.memory import (
 class InferenceRequest(BaseModel):
     """Request model for inference API."""
 
-    image_paths: List[str]
+    image_paths: list[str]
     export_dir: Optional[str] = None
     export_format: str = "mini_npz-glb"
-    extrinsics: Optional[List[List[List[float]]]] = None
-    intrinsics: Optional[List[List[List[float]]]] = None
+    extrinsics: Optional[list[list[list[float]]]] = None
+    intrinsics: Optional[list[list[list[float]]]] = None
     process_res: int = 504
     process_res_method: str = "upper_bound_resize"
-    export_feat_layers: List[int] = []
+    export_feat_layers: list[int] = []
     align_to_input_ext_scale: bool = True
     # GLB export parameters
     conf_thresh_percentile: float = 40.0
@@ -188,7 +188,7 @@ class ModelBackend:
         self.last_used = time.time()
         return self.model
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get backend status information."""
         # Calculate uptime from when model loading completed
         uptime = 0
@@ -209,10 +209,10 @@ class ModelBackend:
 _backend: Optional[ModelBackend] = None
 _app: Optional[FastAPI] = None
 _gallery_dir: Optional[str] = None
-_tasks: Dict[str, TaskStatus] = {}
+_tasks: dict[str, TaskStatus] = {}
 _executor = ThreadPoolExecutor(max_workers=1)  # Restrict to single-task execution
 _running_task_id: Optional[str] = None  # Currently running task ID
-_task_queue: List[str] = []  # Pending task queue
+_task_queue: list[str] = []  # Pending task queue
 
 # Task cleanup configuration
 MAX_TASK_HISTORY = 100  # Maximum number of tasks to keep in memory

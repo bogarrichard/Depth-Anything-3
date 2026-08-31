@@ -22,7 +22,7 @@ import os
 import shutil
 import time
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import Optional
 import cv2
 from PIL import Image
 from pillow_heif import register_heif_opener
@@ -88,9 +88,9 @@ class FileHandler:
     def handle_uploads(
         self,
         input_video: Optional[str],
-        input_images: Optional[List],
+        input_images: Optional[list],
         s_time_interval: float = 10.0,
-    ) -> Tuple[str, List[str]]:
+    ) -> tuple[str, list[str]]:
         """
         Create a new 'target_dir' + 'images' subfolder, and place user-uploaded
         images or extracted frames from video into it.
@@ -145,7 +145,7 @@ class FileHandler:
         print(f"Files copied to {target_dir_images}; took {end_time - start_time:.3f} seconds")
         return target_dir, image_paths
 
-    def _process_images(self, input_images: List, target_dir_images: str) -> List[str]:
+    def _process_images(self, input_images: list, target_dir_images: str) -> list[str]:
         """
         Process uploaded images.
 
@@ -205,7 +205,7 @@ class FileHandler:
 
     def _process_video(
         self, input_video: str, target_dir_images: str, s_time_interval: float
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Process video file and extract frames.
 
@@ -246,9 +246,9 @@ class FileHandler:
     def update_gallery_on_upload(
         self,
         input_video: Optional[str],
-        input_images: Optional[List],
+        input_images: Optional[list],
         s_time_interval: float = 10.0,
-    ) -> Tuple[Optional[str], Optional[str], Optional[List], Optional[str]]:
+    ) -> tuple[Optional[str], Optional[str], Optional[list], Optional[str]]:
         """
         Handle file uploads and update gallery.
 
@@ -273,7 +273,7 @@ class FileHandler:
 
     def load_example_scene(
         self, scene_name: str, examples_dir: str = "examples"
-    ) -> Tuple[Optional[str], Optional[str], Optional[List], str]:
+    ) -> tuple[Optional[str], Optional[str], Optional[list], str]:
         """
         Load a scene from examples directory.
 

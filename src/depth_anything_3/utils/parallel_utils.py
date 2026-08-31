@@ -17,7 +17,7 @@ import os
 from functools import wraps
 from multiprocessing.pool import ThreadPool
 from threading import Thread
-from typing import Callable, Dict, List
+from typing import Callable
 import imageio
 from tqdm import tqdm
 
@@ -77,7 +77,7 @@ def parallel_execution(
     # `*args` packs all positional arguments passed to the function into a tuple
     args = list(args)
 
-    def get_length(args: List, kwargs: Dict):
+    def get_length(args: list, kwargs: dict):
         for a in args:
             if isinstance(a, list):
                 return len(a)
@@ -86,7 +86,7 @@ def parallel_execution(
                 return len(v)
         raise NotImplementedError
 
-    def get_action_args(length: int, args: List, kwargs: Dict, i: int):
+    def get_action_args(length: int, args: list, kwargs: dict, i: int):
         action_args = [
             (arg[i] if isinstance(arg, list) and len(arg) == length else arg) for arg in args
         ]

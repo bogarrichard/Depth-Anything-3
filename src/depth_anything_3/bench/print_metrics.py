@@ -23,8 +23,6 @@ import argparse
 import json
 import os
 import re
-from typing import Dict as TDict
-from typing import List
 
 
 # ANSI color codes for terminal output
@@ -115,7 +113,7 @@ class MetricsPrinter:
         """
         self.use_color = use_color
 
-    def print_results(self, metrics: TDict[str, dict], summary_only: bool = True) -> None:
+    def print_results(self, metrics: dict[str, dict], summary_only: bool = True) -> None:
         """
         Print evaluation metrics in a beautiful tabular format.
 
@@ -141,8 +139,8 @@ class MetricsPrinter:
 
     def print_comparison(
         self,
-        metrics_list: List[TDict[str, dict]],
-        labels: List[str],
+        metrics_list: list[dict[str, dict]],
+        labels: list[str],
     ) -> None:
         """
         Print comparison table for multiple evaluation runs.
@@ -254,7 +252,7 @@ class MetricsPrinter:
         print("=" * width)
         print()
 
-    def _group_by_dataset(self, metrics: TDict[str, dict]) -> TDict[str, dict]:
+    def _group_by_dataset(self, metrics: dict[str, dict]) -> dict[str, dict]:
         """Group metrics by dataset."""
         grouped = {}
         for key, data in metrics.items():
@@ -269,7 +267,7 @@ class MetricsPrinter:
                 grouped[dataset][mode] = data
         return grouped
 
-    def _print_dataset_section(self, dataset: str, modes_data: TDict[str, dict]) -> None:
+    def _print_dataset_section(self, dataset: str, modes_data: dict[str, dict]) -> None:
         """Print metrics section for a single dataset."""
         print(f"\n{Colors.BOLD_MAGENTA}🔍 {dataset.upper()}{Colors.RESET}")
         print("-" * 100)
@@ -345,7 +343,7 @@ class MetricsPrinter:
             scene_info.append(f"{mode}: {scene_count} scenes")
         print(f"\n{Colors.CYAN}📈 {' | '.join(scene_info)}{Colors.RESET}")
 
-    def _print_summary(self, metrics: TDict[str, dict]) -> None:
+    def _print_summary(self, metrics: dict[str, dict]) -> None:
         """
         Print summary table with key metrics across all datasets.
 
@@ -534,7 +532,7 @@ class MetricsPrinter:
         print(f"\n{Colors.CYAN}* Avg F-score / Overall = average over HiRoom, ETH3D, 7Scenes, ScanNet++ (4 datasets){Colors.RESET}")
 
 
-def load_metrics_from_dir(metric_dir: str) -> TDict[str, dict]:
+def load_metrics_from_dir(metric_dir: str) -> dict[str, dict]:
     """
     Load all metrics JSON files from a directory.
 

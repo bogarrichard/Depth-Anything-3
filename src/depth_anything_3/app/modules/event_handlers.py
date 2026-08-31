@@ -21,7 +21,7 @@ This module handles all event callbacks and user interactions.
 import os
 import time
 from glob import glob
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 import gradio as gr
 import numpy as np
 import torch
@@ -62,7 +62,7 @@ class EventHandlers:
         show_cam: bool,
         filter_black_bg: bool,
         filter_white_bg: bool,
-        processed_data: Optional[Dict],
+        processed_data: Optional[dict],
         scene_name: str = "",
     ) -> str:
         """
@@ -145,10 +145,10 @@ class EventHandlers:
         ref_view_strategy: str = "saddle_balanced",
         gs_trj_mode: str = "extend",
         gs_video_quality: str = "high",
-    ) -> Tuple[
+    ) -> tuple[
         Optional[str],
         str,
-        Optional[Dict],
+        Optional[dict],
         Optional[np.ndarray],
         Optional[np.ndarray],
         str,
@@ -268,7 +268,7 @@ class EventHandlers:
         filter_black_bg: bool = False,
         filter_white_bg: bool = False,
         process_res_method: str = "upper_bound_resize",
-    ) -> Tuple[gr.update, str]:
+    ) -> tuple[gr.update, str]:
         """
         Reload saved predictions from npz, create (or reuse) the GLB for new parameters,
         and return it for the 3D viewer.
@@ -332,9 +332,9 @@ class EventHandlers:
     def handle_uploads(
         self,
         input_video: Optional[str],
-        input_images: Optional[List],
+        input_images: Optional[list],
         s_time_interval: float = 10.0,
-    ) -> Tuple[Optional[str], Optional[str], Optional[List], Optional[str]]:
+    ) -> tuple[Optional[str], Optional[str], Optional[list], Optional[str]]:
         """
         Handle file uploads and update gallery.
 
@@ -350,12 +350,12 @@ class EventHandlers:
             input_video, input_images, s_time_interval
         )
 
-    def load_example_scene(self, scene_name: str, examples_dir: str = None) -> Tuple[
+    def load_example_scene(self, scene_name: str, examples_dir: str = None) -> tuple[
         Optional[str],
         Optional[str],
-        Optional[List],
+        Optional[list],
         str,
-        Optional[Dict],
+        Optional[dict],
         gr.Dropdown,
         Optional[str],
         gr.update,
@@ -451,10 +451,10 @@ class EventHandlers:
 
     def navigate_depth_view(
         self,
-        processed_data: Optional[Dict[int, Dict[str, Any]]],
+        processed_data: Optional[dict[int, dict[str, Any]]],
         current_selector: str,
         direction: int,
-    ) -> Tuple[str, Optional[str]]:
+    ) -> tuple[str, Optional[str]]:
         """
         Navigate depth view.
 
@@ -471,7 +471,7 @@ class EventHandlers:
         )
 
     def update_depth_view(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]], view_index: int
+        self, processed_data: Optional[dict[int, dict[str, Any]]], view_index: int
     ) -> Optional[str]:
         """
         Update depth view for a specific view index.
@@ -487,10 +487,10 @@ class EventHandlers:
 
     def navigate_measure_view(
         self,
-        processed_data: Optional[Dict[int, Dict[str, Any]]],
+        processed_data: Optional[dict[int, dict[str, Any]]],
         current_selector: str,
         direction: int,
-    ) -> Tuple[str, Optional[np.ndarray], Optional[np.ndarray], List]:
+    ) -> tuple[str, Optional[np.ndarray], Optional[np.ndarray], list]:
         """
         Navigate measure view.
 
@@ -507,8 +507,8 @@ class EventHandlers:
         )
 
     def update_measure_view(
-        self, processed_data: Optional[Dict[int, Dict[str, Any]]], view_index: int
-    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], List]:
+        self, processed_data: Optional[dict[int, dict[str, Any]]], view_index: int
+    ) -> tuple[Optional[np.ndarray], Optional[np.ndarray], list]:
         """
         Update measure view for a specific view index.
 
@@ -523,11 +523,11 @@ class EventHandlers:
 
     def measure(
         self,
-        processed_data: Optional[Dict[int, Dict[str, Any]]],
-        measure_points: List,
+        processed_data: Optional[dict[int, dict[str, Any]]],
+        measure_points: list,
         current_view_selector: str,
         event: gr.SelectData,
-    ) -> List:
+    ) -> list:
         """
         Handle measurement on images.
 
@@ -545,8 +545,8 @@ class EventHandlers:
         )
 
     def select_first_frame(
-        self, image_gallery: List, selected_index: int = 0
-    ) -> Tuple[List, str, str]:
+        self, image_gallery: list, selected_index: int = 0
+    ) -> tuple[list, str, str]:
         """
         Select the first frame from the image gallery.
 

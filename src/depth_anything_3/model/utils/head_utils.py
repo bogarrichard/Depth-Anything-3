@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Tuple, Union
+from typing import Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -83,9 +83,9 @@ def activate_head_gs(out, activation="norm_exp", conf_activation="expp1", conf_d
 class Permute(nn.Module):
     """nn.Module wrapper around Tensor.permute for cleaner nn.Sequential usage."""
 
-    dims: Tuple[int, ...]
+    dims: tuple[int, ...]
 
-    def __init__(self, dims: Tuple[int, ...]) -> None:
+    def __init__(self, dims: tuple[int, ...]) -> None:
         super().__init__()
         self.dims = dims
 
@@ -204,7 +204,7 @@ def create_uv_grid(
 # -----------------------------------------------------------------------------
 def custom_interpolate(
     x: torch.Tensor,
-    size: Union[Tuple[int, int], None] = None,
+    size: Union[tuple[int, int], None] = None,
     scale_factor: Union[float, None] = None,
     mode: str = "bilinear",
     align_corners: bool = True,

@@ -21,7 +21,6 @@ Contains:
 - Geometry utilities (quaternion conversion, etc.)
 """
 
-from typing import Dict as TDict
 from typing import Optional, Union
 import numpy as np
 import open3d as o3d
@@ -92,7 +91,7 @@ def evaluate_3d_reconstruction(
     pcd_trgt: Union[o3d.geometry.PointCloud, np.ndarray],
     threshold: float = 0.05,
     down_sample: Optional[float] = None,
-) -> TDict[str, float]:
+) -> dict[str, float]:
     """
     Evaluate 3D reconstruction quality using standard metrics.
 

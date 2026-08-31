@@ -25,7 +25,6 @@ Evaluation metrics:
 """
 
 import os
-from typing import Dict as TDict
 import cv2
 import imageio
 import numpy as np
@@ -247,7 +246,7 @@ class ScanNetPP(Dataset):
 
         return image
 
-    def eval3d(self, scene: str, fuse_path: str) -> TDict[str, float]:
+    def eval3d(self, scene: str, fuse_path: str) -> dict[str, float]:
         """
         Evaluate fused point cloud against ScanNet++ ground truth mesh.
 

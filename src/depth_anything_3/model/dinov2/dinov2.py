@@ -8,7 +8,6 @@
 #   https://github.com/rwightman/pytorch-image-models/tree/master/timm/models/vision_transformer.py
 
 
-from typing import List
 import torch.nn as nn
 
 from depth_anything_3.model.dinov2.vision_transformer import (
@@ -23,7 +22,7 @@ class DinoV2(nn.Module):
     def __init__(
         self,
         name: str,
-        out_layers: List[int],
+        out_layers: list[int],
         alt_start: int = -1,
         qknorm_start: int = -1,
         rope_start: int = -1,

@@ -9,7 +9,7 @@
 
 import math
 from collections.abc import Sequence
-from typing import Callable, List, Tuple, Union
+from typing import Callable, Union
 import numpy as np
 import torch
 import torch.nn as nn
@@ -373,9 +373,9 @@ class DinoVisionTransformer(nn.Module):
         self,
         x: torch.Tensor,
         n: Union[int, Sequence] = 1,  # Layers or n last layers to take
-        export_feat_layers: List[int] = [],
+        export_feat_layers: list[int] = [],
         **kwargs,
-    ) -> Tuple[Union[torch.Tensor, Tuple[torch.Tensor]]]:
+    ) -> tuple[Union[torch.Tensor, tuple[torch.Tensor]]]:
         outputs, aux_outputs = self._get_intermediate_layers_not_chunked(
             x, n, export_feat_layers=export_feat_layers, **kwargs
         )

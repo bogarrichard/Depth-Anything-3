@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List
 import numpy as np
 import torch
 from evo.core.trajectory import PosePath3D
@@ -21,7 +20,7 @@ from depth_anything_3.utils.geometry import affine_inverse, affine_inverse_np
 
 
 def batch_apply_alignment_to_enc(
-    rots: torch.Tensor, trans: torch.Tensor, scales: torch.Tensor, enc_list: List[torch.Tensor]
+    rots: torch.Tensor, trans: torch.Tensor, scales: torch.Tensor, enc_list: list[torch.Tensor]
 ):
     pass
 

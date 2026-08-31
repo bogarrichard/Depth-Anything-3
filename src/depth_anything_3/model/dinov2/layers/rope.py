@@ -14,7 +14,6 @@
 #         https://github.com/naver-ai/rope-vit
 
 
-from typing import Dict, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -33,7 +32,7 @@ class PositionGetter:
 
     def __init__(self):
         """Initializes the position generator with an empty cache."""
-        self.position_cache: Dict[Tuple[int, int], torch.Tensor] = {}
+        self.position_cache: dict[tuple[int, int], torch.Tensor] = {}
 
     def __call__(
         self, batch_size: int, height: int, width: int, device: torch.device
@@ -82,11 +81,11 @@ class RotaryPositionEmbedding2D(nn.Module):
         super().__init__()
         self.base_frequency = frequency
         self.scaling_factor = scaling_factor
-        self.frequency_cache: Dict[Tuple, Tuple[torch.Tensor, torch.Tensor]] = {}
+        self.frequency_cache: dict[tuple, tuple[torch.Tensor, torch.Tensor]] = {}
 
     def _compute_frequency_components(
         self, dim: int, seq_len: int, device: torch.device, dtype: torch.dtype
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Computes frequency components for rotary embeddings.
 
         Args:

@@ -18,7 +18,7 @@ Configuration utility functions
 
 import importlib
 from pathlib import Path
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, Union
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
 try:
@@ -28,7 +28,7 @@ except Exception as e:
     print(f"Error registering eval resolver: {e}")
 
 
-def load_config(path: str, argv: List[str] = None) -> Union[DictConfig, ListConfig]:
+def load_config(path: str, argv: list[str] = None) -> Union[DictConfig, ListConfig]:
     """
     Load a configuration. Will resolve inheritance.
     Supports both file paths and module paths (e.g., depth_anything_3.configs.giant).
