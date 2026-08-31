@@ -7,12 +7,11 @@ name = "depth-anything-3"
 version = "0.0.0"
 description = "Depth Anything 3"
 readme = "README.md"
-requires-python = ">=3.9, <=3.13"
+requires-python = ">=3.9,<3.14"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Your Name" }]
 
 dependencies = [
-    "pre-commit",
     "trimesh",
     "torch>=2",
     "torchvision",
@@ -20,28 +19,26 @@ dependencies = [
     "huggingface_hub",
     "imageio",
     "numpy<2",
-    "opencv-python",
+    "opencv-python-headless",
     "xformers",
     "open3d",
     "fastapi",
     "uvicorn",
     "requests",
-    "typer",
+    "typer>=0.9.0",
     "pillow",
     "omegaconf",
     "evo",
     "e3nn",
-    "moviepy",
+    "moviepy==1.0.3",
     "plyfile",
     "pillow_heif",
     "safetensors",
-    "uvicorn",
-    "moviepy==1.0.3",
-    "typer>=0.9.0",
     "pycolmap",
 ]
 
 [project.optional-dependencies]
+dev = ["pre-commit"]
 app = ["gradio>=5", "pillow>=9.0"] # requires that python3>=3.10
 gs = ["gsplat @ git+https://github.com/nerfstudio-project/gsplat.git@0b4dddf04cb687367602c01196913cde6a743d70"]
 all = ["depth-anything-3[app,gs]"]
