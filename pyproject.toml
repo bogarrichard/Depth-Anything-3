@@ -69,23 +69,24 @@ allow-direct-references = true
 [tool.mypy]
 plugins = ["jaxtyping.mypy_plugin"]
 
-[tool.black]
+[tool.ruff]
 line-length = 99
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
-include = '\.pyi?$'
-exclude = '''
-/(
-  | \.git
-)/
-'''
+target-version = "py39"
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-include_trailing_comma = true
-known_third_party = ["bson","cruise","cv2","dataloader","diffusers","omegaconf","tensorflow","torch","torchvision","transformers","gsplat"]
-known_first_party = ["common", "data", "models", "projects"]
-sections = ["FUTURE","STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
-skip_gitignore = true
-line_length = 99
-no_lines_before="THIRDPARTY"
+[tool.ruff.lint]
+# E/F: pycodestyle+pyflakes (was flake8), I: isort, UP: pyupgrade
+select = ["E", "F", "I", "UP"]
+# E203 is handled by the formatter; W503 has no ruff equivalent (it was a
+# black-compatibility ignore and is obsolete). E741/E731 carried over.
+ignore = ["E203", "E741", "E731"]
+
+[tool.ruff.lint.pyupgrade]
+# Mirrors the previous `pyupgrade --keep-runtime-typing`. Required: without it
+# UP006/UP045 rewrite annotations that are evaluated at runtime, which breaks
+# the declared Python 3.9 floor.
+keep-runtime-typing = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["depth_anything_3"]
+# Matches the previous isort `no_lines_before = "THIRDPARTY"`.
+no-lines-before = ["third-party"]

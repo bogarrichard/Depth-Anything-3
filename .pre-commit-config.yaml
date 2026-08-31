@@ -27,33 +27,10 @@ repos:
       - id: trailing-whitespace
         args:
           - '--markdown-linebreak-ext=md'
-  - repo: 'https://github.com/pycqa/isort'
-    rev: 5.13.2
+  - repo: 'https://github.com/astral-sh/ruff-pre-commit'
+    rev: v0.14.4
     hooks:
-      - id: isort
+      - id: ruff-check
         args:
-          - '--settings-file'
-          - 'pyproject.toml'
-          - '--filter-files'
-  - repo: 'https://github.com/asottile/pyupgrade'
-    rev: v3.15.2
-    hooks:
-      - id: pyupgrade
-        args: [--py38-plus, --keep-runtime-typing]
-  - repo: 'https://github.com/psf/black.git'
-    rev: 24.3.0
-    hooks:
-      - id: black
-        args:
-          - '--config=pyproject.toml'
-  - repo: 'https://github.com/PyCQA/flake8'
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        args:
-          - '--config=.flake8'
-  - repo: 'https://github.com/myint/autoflake'
-    rev: v1.4
-    hooks:
-      - id: autoflake
-        args: [ '--remove-all-unused-imports', '--recursive', '--remove-unused-variables', '--in-place']
+          - '--fix'
+      - id: ruff-format
