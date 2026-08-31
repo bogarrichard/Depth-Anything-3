@@ -1,0 +1,12 @@
+# Commits that only reformat or mechanically rewrite code.
+# Tell git to skip them when attributing lines:
+#
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# GitHub honours this file automatically.
+
+# style: reformat with ruff format
+2ced3cf5ed578a77a3f42040c45a6ec4b25ae3f9
+
+# refactor(typing): use PEP 585 builtin generics in annotations
+4937eb0080013623fe796694b495c4c4b7e83adc
