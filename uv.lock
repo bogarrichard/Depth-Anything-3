@@ -736,6 +736,7 @@ dev = [
     { name = "hypothesis" },
     { name = "pre-commit" },
     { name = "pytest" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 gs = [
     { name = "gsplat" },
@@ -792,6 +793,7 @@ requires-dist = [
     { name = "scikit-learn", marker = "extra == 'bench'" },
     { name = "scikit-learn", marker = "extra == 'streaming'" },
     { name = "scipy" },
+    { name = "tomli", marker = "python_full_version < '3.11' and extra == 'dev'", specifier = ">=2" },
     { name = "torch", specifier = ">=2" },
     { name = "torchvision" },
     { name = "tqdm" },

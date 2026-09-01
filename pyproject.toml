@@ -42,7 +42,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pre-commit", "pytest>=8", "hypothesis>=6"]
+dev = [
+    "pre-commit",
+    "pytest>=8",
+    "hypothesis>=6",
+    # tomllib is stdlib from 3.11; tests/test_packaging.py needs the backport below that.
+    'tomli>=2; python_version < "3.11"',
+]
 # open3d is used only under src/depth_anything_3/bench/ and has no wheels for
 # Python 3.13. Keeping it out of the core install lets the package itself run
 # on 3.13.

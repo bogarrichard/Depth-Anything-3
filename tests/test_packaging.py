@@ -10,7 +10,11 @@ import ast
 import pathlib
 import sys
 import pytest
-import tomllib
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:  # tomllib is stdlib only from 3.11; tomli is the backport.
+    import tomli as tomllib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PYPROJECT = tomllib.loads((ROOT / "pyproject.toml").read_text())
