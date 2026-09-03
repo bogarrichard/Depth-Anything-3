@@ -147,7 +147,7 @@ def auto(
     ),
     ref_view_strategy: str = typer.Option(
         "saddle_balanced",
-        help="Reference view selection strategy: empty, first, middle, saddle_balanced, saddle_sim_range",
+        help="Reference view selection strategy: first, middle, saddle_balanced, saddle_sim_range",
     ),
     # GLB export options
     conf_thresh_percentile: float = typer.Option(
@@ -340,7 +340,7 @@ def image(
     ),
     ref_view_strategy: str = typer.Option(
         "saddle_balanced",
-        help="Reference view selection strategy: empty, first, middle, saddle_balanced, saddle_sim_range",
+        help="Reference view selection strategy: first, middle, saddle_balanced, saddle_sim_range",
     ),
     # GLB export options
     conf_thresh_percentile: float = typer.Option(
@@ -419,7 +419,7 @@ def images(
     ),
     ref_view_strategy: str = typer.Option(
         "saddle_balanced",
-        help="Reference view selection strategy: empty, first, middle, saddle_balanced, saddle_sim_range",
+        help="Reference view selection strategy: first, middle, saddle_balanced, saddle_sim_range",
     ),
     # GLB export options
     conf_thresh_percentile: float = typer.Option(
@@ -503,7 +503,7 @@ def colmap(
     ),
     ref_view_strategy: str = typer.Option(
         "saddle_balanced",
-        help="Reference view selection strategy: empty, first, middle, saddle_balanced, saddle_sim_range",
+        help="Reference view selection strategy: first, middle, saddle_balanced, saddle_sim_range",
     ),
     # GLB export options
     conf_thresh_percentile: float = typer.Option(
@@ -583,7 +583,7 @@ def video(
     ),
     ref_view_strategy: str = typer.Option(
         "saddle_balanced",
-        help="Reference view selection strategy: empty, first, middle, saddle_balanced, saddle_sim_range",
+        help="Reference view selection strategy: first, middle, saddle_balanced, saddle_sim_range",
     ),
     # GLB export options
     conf_thresh_percentile: float = typer.Option(
