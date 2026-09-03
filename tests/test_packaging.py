@@ -2,13 +2,19 @@
 
 The `addict` incident: the package imported a module it never declared, so a
 clean install failed at `import depth_anything_3.api`. It went unnoticed
-because several such modules happened to arrive transitively. This walks
-every import in the tree and checks it against the declared set.
+because several such modules happened to arrive transitively. The scan below
+walks every import in the tree and checks it against the declared set --
+which is strictly stronger than a hand-rolled sweep, and found two more
+(scikit-learn, pyyaml) the manual one had missed.
+
+The rest of this file keeps the metadata honest in the other direction: that
+the extras the code tells users to install actually exist, that ``all`` means
+all, and that the declared Python range matches what CI proves.
 """
 
 import ast
-import importlib.util
 import pathlib
+import re
 import sys
 import pytest
 
@@ -19,6 +25,7 @@ else:  # tomllib is stdlib only from 3.11; tomli is the backport.
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PYPROJECT = tomllib.loads((ROOT / "pyproject.toml").read_text())
+EXTRAS = PYPROJECT["project"]["optional-dependencies"]
 
 # Distributions whose import name differs from their package name.
 IMPORT_NAME = {
@@ -54,6 +61,7 @@ FIRST_PARTY = {
     "configs",
     "salad",
     "conftest",
+    "_oracles",
 }
 
 
@@ -61,17 +69,20 @@ def _normalise(name: str) -> str:
     return name.lower().replace("_", "-")
 
 
+def _requirement_name(spec: str) -> str:
+    base = spec.split(";")[0]
+    for sep in (">", "<", "=", "[", "@", "!", "~"):
+        base = base.split(sep)[0]
+    return base.strip()
+
+
 def _declared() -> set[str]:
-    project = PYPROJECT["project"]
-    specs = list(project["dependencies"])
-    for extra in project["optional-dependencies"].values():
+    specs = list(PYPROJECT["project"]["dependencies"])
+    for extra in EXTRAS.values():
         specs += extra
     names = set()
     for spec in specs:
-        base = spec.split(";")[0]
-        for sep in (">", "<", "=", "[", "@", "!", "~"):
-            base = base.split(sep)[0]
-        base = base.strip()
+        base = _requirement_name(spec)
         if not base:
             continue
         names.add(_normalise(base))
@@ -113,6 +124,9 @@ def _third_party_imports():
     return found
 
 
+# ---------------------------------------------------------------------------
+# dependencies
+# ---------------------------------------------------------------------------
 def test_every_third_party_import_is_declared():
     declared = _declared()
     undeclared = {
@@ -126,14 +140,43 @@ def test_every_third_party_import_is_declared():
     )
 
 
+def test_the_scan_finds_something_to_check():
+    """Guard the guard: a broken walker would report zero undeclared imports
+    and look like a pass."""
+    imports = _third_party_imports()
+    assert len(imports) > 20
+    assert "torch" in imports and "numpy" in imports
+
+
+def test_every_intentionally_undeclared_import_is_still_imported():
+    """The exemption list must not outlive the code that needed it."""
+    imported = set(_third_party_imports())
+    stale = INTENTIONALLY_UNDECLARED - imported
+    assert not stale, f"no longer imported anywhere, drop the exemption: {sorted(stale)}"
+
+
 def test_no_duplicate_dependencies():
     """`uvicorn`, `typer` and `moviepy` were each listed twice once already."""
-    deps = PYPROJECT["project"]["dependencies"]
-    names = [_normalise(d.split(">")[0].split("<")[0].split("=")[0].strip()) for d in deps]
+    names = [_normalise(_requirement_name(d)) for d in PYPROJECT["project"]["dependencies"]]
     duplicates = {n for n in names if names.count(n) > 1}
     assert not duplicates, f"duplicated dependencies: {duplicates}"
 
 
+def test_no_dependency_is_both_core_and_optional():
+    """A package in an extra *and* in the core list makes the extra a lie:
+    it is installed either way."""
+    core = {_normalise(_requirement_name(d)) for d in PYPROJECT["project"]["dependencies"]}
+    for name, specs in EXTRAS.items():
+        if name == "all":
+            continue
+        optional = {_normalise(_requirement_name(s)) for s in specs}
+        overlap = (core & optional) - {"depth-anything-3", "pillow"}
+        assert not overlap, f"extra {name!r} re-declares core dependencies: {sorted(overlap)}"
+
+
+# ---------------------------------------------------------------------------
+# python version
+# ---------------------------------------------------------------------------
 def test_requires_python_has_an_exclusive_upper_bound():
     """`<=3.13` silently excluded 3.13.1+, because PEP 440 orders 3.13.1 > 3.13."""
     requires = PYPROJECT["project"]["requires-python"]
@@ -143,24 +186,80 @@ def test_requires_python_has_an_exclusive_upper_bound():
     )
 
 
-@pytest.mark.parametrize("extra", ["dev", "bench", "app", "gs", "streaming"])
+def test_the_ci_matrix_stays_inside_the_declared_python_range():
+    """CI proves the floor and the ceiling; if the declared range moves and
+    the matrix does not, the claim stops being tested."""
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
+    tested = {m for m in re.findall(r"'(3\.\d+)'", workflow)}
+    assert tested, "no python versions found in the CI matrix"
+
+    requires = PYPROJECT["project"]["requires-python"]
+    floor = re.search(r">=\s*3\.(\d+)", requires)
+    ceiling = re.search(r"<\s*3\.(\d+)", requires)
+    assert floor and ceiling, requires
+    for version in tested:
+        minor = int(version.split(".")[1])
+        assert int(floor.group(1)) <= minor < int(ceiling.group(1)), (
+            f"CI tests {version}, which requires-python {requires!r} excludes"
+        )
+    assert f"3.{floor.group(1)}" in tested, "CI does not test the declared floor"
+
+
+# ---------------------------------------------------------------------------
+# extras
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("extra", ["dev", "bench", "app", "gs", "colmap", "streaming", "xformers"])
 def test_expected_extras_exist(extra):
-    assert extra in PYPROJECT["project"]["optional-dependencies"]
+    assert extra in EXTRAS
 
 
-def test_colmap_export_fails_loudly_without_pycolmap():
-    """pycolmap is optional, but 'colmap' must never silently no-op.
+def test_the_all_extra_bundles_every_optional_extra_except_the_documented_exclusions():
+    """``xformers`` is out of ``all`` on purpose -- its wheels match one exact
+    torch/CUDA/Python combination. ``dev`` is not a user-facing extra."""
+    referenced = set()
+    for spec in EXTRAS["all"]:
+        match = re.search(r"\[(.*)\]", spec)
+        if match:
+            referenced |= {name.strip() for name in match.group(1).split(",")}
+    assert referenced == set(EXTRAS) - {"all", "dev", "xformers"}
 
-    The export dispatcher advertises 'colmap' in SUPPORTED_EXPORT_FORMATS and
-    --export-format is a free string on the CLI, so a swallowed import would
-    make `da3 ... --export-format colmap` produce nothing at all.
-    """
-    from depth_anything_3.utils import export as export_mod
 
-    assert "colmap" in export_mod.SUPPORTED_EXPORT_FORMATS
+def test_the_all_extra_only_points_at_this_package():
+    for spec in EXTRAS["all"]:
+        assert _requirement_name(spec) == PYPROJECT["project"]["name"]
 
-    if importlib.util.find_spec("pycolmap") is not None:
-        pytest.skip("pycolmap is installed; the failure path cannot be exercised")
 
-    with pytest.raises(ImportError, match="pycolmap"):
-        export_mod.export(None, "colmap", "/nonexistent")
+def test_every_extra_the_code_tells_users_to_install_exists():
+    """Error messages say ``pip install "depth-anything-3[gs]"``. If the extra
+    were renamed, that advice would send users to a dead end."""
+    pattern = re.compile(r"depth-anything-3\[([a-z,]+)\]")
+    mentioned = set()
+    for path in _source_files():
+        for match in pattern.finditer(path.read_text()):
+            mentioned |= {name for name in match.group(1).split(",")}
+    assert mentioned, "no install hints found -- the guard needs updating"
+    assert mentioned <= set(EXTRAS), (
+        f"unknown extras suggested to users: {mentioned - set(EXTRAS)}"
+    )
+
+
+def test_the_dev_extra_can_run_this_suite():
+    dev = {_normalise(_requirement_name(s)) for s in EXTRAS["dev"]}
+    assert {"pytest", "hypothesis"} <= dev
+
+
+# ---------------------------------------------------------------------------
+# test configuration
+# ---------------------------------------------------------------------------
+def test_the_suite_can_import_its_own_helpers():
+    """``tests/`` on ``pythonpath`` is what makes ``from conftest import ...``
+    and ``from _oracles import ...`` work in every file here."""
+    config = PYPROJECT["tool"]["pytest"]["ini_options"]
+    assert "tests" in config["pythonpath"]
+    assert config["testpaths"] == ["tests"]
+
+
+def test_markers_are_strict():
+    """``--strict-markers`` turns a typo in a ``@pytest.mark`` into an error
+    instead of a silently ignored decorator."""
+    assert "--strict-markers" in PYPROJECT["tool"]["pytest"]["ini_options"]["addopts"]

@@ -98,5 +98,9 @@ jobs:
           else
             uv sync --python ${{ matrix.python }} --extra dev
           fi
+      # `--with e3nn` (rather than `--extra gs`) pulls in just the spherical
+      # harmonics dependency: it un-skips the six rotate_sh tests, which are the
+      # guard against an e3nn version bump changing the Wigner-D convention.
+      # gsplat is deliberately left out -- it compiles CUDA at import time.
       - name: pytest
-        run: uv run --python ${{ matrix.python }} python -m pytest
+        run: uv run --python ${{ matrix.python }} --with e3nn python -m pytest
