@@ -604,7 +604,6 @@ version = "0.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "addict" },
-    { name = "e3nn" },
     { name = "einops" },
     { name = "fastapi" },
     { name = "huggingface-hub" },
@@ -636,6 +635,7 @@ dependencies = [
 
 [package.optional-dependencies]
 all = [
+    { name = "e3nn" },
     { name = "faiss-gpu" },
     { name = "gradio" },
     { name = "gsplat" },
@@ -670,6 +670,7 @@ dev = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 gs = [
+    { name = "e3nn" },
     { name = "gsplat" },
 ]
 streaming = [
@@ -691,7 +692,7 @@ xformers = [
 requires-dist = [
     { name = "addict" },
     { name = "depth-anything-3", extras = ["app", "bench", "colmap", "gs", "streaming"], marker = "extra == 'all'" },
-    { name = "e3nn" },
+    { name = "e3nn", marker = "extra == 'gs'" },
     { name = "einops" },
     { name = "faiss-gpu", marker = "extra == 'streaming'" },
     { name = "fastapi" },

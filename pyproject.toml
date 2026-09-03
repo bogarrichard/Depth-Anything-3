@@ -32,7 +32,6 @@ dependencies = [
     "scipy",
     "tqdm",
     "pypose>=0.9,<0.10",
-    "e3nn",
     "moviepy==1.0.3",
     "plyfile",
     "pillow_heif",
@@ -52,7 +51,7 @@ dev = [
 # on 3.13.
 bench = ["open3d", "scikit-learn"]
 app = ["gradio>=5", "pillow>=9.0"]
-gs = ["gsplat>=1.5,<2"]
+gs = ["gsplat>=1.5,<2", "e3nn"]
 # Optional fused SwiGLU kernels for the `vitg` backbone only. The pure-torch
 # fallback in model/dinov2/layers/swiglu_ffn.py is parameter-compatible, so
 # checkpoints load either way. Kept out of `all`: xformers wheels are built

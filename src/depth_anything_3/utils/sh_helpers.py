@@ -18,10 +18,14 @@ from einops import einsum
 
 try:
     from e3nn.o3 import matrix_to_angles, wigner_D
-except ImportError:
-    from depth_anything_3.utils.logger import logger
 
-    logger.warn("Dependency 'e3nn' not found. Required for rotating the camera space SH coeff")
+    E3NN_AVAILABLE = True
+except ImportError:
+    # Bound to None rather than left undefined: rotate_sh below raises a clear
+    # ImportError when it is actually needed. Warning at import time and leaving
+    # the names unbound produced a bare NameError at the call site instead.
+    matrix_to_angles = wigner_D = None
+    E3NN_AVAILABLE = False
 
 
 def project_to_so3_strict(M: torch.Tensor) -> torch.Tensor:
@@ -58,6 +62,12 @@ def rotate_sh(
     rotations: torch.Tensor,  # "*#batch 3 3"
 ) -> torch.Tensor:  # "*batch n"
     # https://github.com/graphdeco-inria/gaussian-splatting/issues/176#issuecomment-2452412653
+    if not E3NN_AVAILABLE:
+        raise ImportError(
+            "Rotating camera-space spherical harmonics requires e3nn. "
+            'Install it with: pip install "depth-anything-3[gs]"'
+        )
+
     device = sh_coefficients.device
     dtype = sh_coefficients.dtype
 
