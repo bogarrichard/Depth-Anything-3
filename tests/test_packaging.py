@@ -41,6 +41,11 @@ INTENTIONALLY_UNDECLARED = {
     "sim3solve",
 }
 
+# Modules that are stdlib on some supported Python versions but not others.
+# The scan below uses the *running* interpreter's stdlib list, so without this
+# `tomllib` reads as a third-party import on 3.10 (it entered the stdlib in 3.11).
+STDLIB_IN_LATER_PYTHON = {"tomllib"}
+
 FIRST_PARTY = {
     "depth_anything_3",
     "da3_streaming",
@@ -85,7 +90,7 @@ def _source_files():
 
 def _third_party_imports():
     """Map top-level third-party import name -> set of files importing it."""
-    stdlib = set(sys.stdlib_module_names)
+    stdlib = set(sys.stdlib_module_names) | STDLIB_IN_LATER_PYTHON
     found: dict[str, set[pathlib.Path]] = {}
     for path in _source_files():
         try:
