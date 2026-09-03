@@ -27,7 +27,7 @@ DEFAULT_EVAL_WORKSPACE = "workspace/evaluation"
 
 # Default reference view selection strategy for evaluation
 # Use "first" for consistent and reproducible evaluation results
-# Other options: "saddle_balanced", "auto", "mid"
+# Other options: "middle", "saddle_balanced", "saddle_sim_range"
 EVAL_REF_VIEW_STRATEGY = "first"
 
 # -----------------------------------------------------------------------------
