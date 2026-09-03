@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import numpy as np
+import pypose as pp
 import torch
-from evo.core.trajectory import PosePath3D
 
 from depth_anything_3.utils.geometry import affine_inverse, affine_inverse_np
 
@@ -61,7 +61,7 @@ def batch_align_poses_umeyama(ext_ref: torch.Tensor, ext_est: torch.Tensor):
     return torch.stack(rots), torch.stack(trans), torch.stack(scales)
 
 
-# Dependencies: affine_inverse_np, PosePath3D (maintain consistency with your existing project)
+# Dependencies: affine_inverse_np, pypose (maintain consistency with your existing project)
 
 
 def _to44(ext):
@@ -81,11 +81,21 @@ def _poses_from_ext(ext_ref, ext_est):
 
 
 def _umeyama_sim3_from_paths(pose_ref, pose_est):
-    path_ref = PosePath3D(poses_se3=pose_ref.copy())
-    path_est = PosePath3D(poses_se3=pose_est.copy())
-    r, t, s = path_est.align(path_ref, correct_scale=True)
-    pose_est_aligned = np.stack(path_est.poses_se3)
-    return r, t, s, pose_est_aligned
+    """Umeyama Sim(3) fit of the estimated camera centres onto the reference ones.
+
+    Returns (rotation 3x3, translation (3,), scale, aligned poses), where
+    `pose_ref ~= s * r @ pose_est + t`.
+    """
+    # The fit is over camera centres, i.e. the translation column of each pose.
+    src = torch.from_numpy(np.ascontiguousarray(pose_est[:, :3, 3]))[None].double()
+    dst = torch.from_numpy(np.ascontiguousarray(pose_ref[:, :3, 3]))[None].double()
+
+    sim3 = pp.svdstf(src, dst)  # source -> target, with scale
+    r = sim3.rotation().matrix()[0].numpy()
+    t = sim3.translation()[0].numpy()
+    s = float(sim3.scale()[0])
+
+    return r, t, s, _apply_sim3_to_poses(pose_est, r, t, s)
 
 
 def _apply_sim3_to_poses(poses, r, t, s):
