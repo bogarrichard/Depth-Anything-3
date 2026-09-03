@@ -264,10 +264,10 @@ def test_auxiliary_features_are_converted_and_debatched():
 
 def test_is_metric_is_falsy_for_a_plain_prediction():
     """``Prediction.is_metric`` is annotated ``int`` and read as a boolean by
-    the gaussian exporter. The extractor reads it with ``getattr`` off a dict,
-    so a plain dict yields the default and an addict output yields an empty
-    ``Dict`` -- both falsy, which is what the exporter relies on."""
-    assert not OutputProcessor()(_model_output()).is_metric
+    the gaussian exporter. The extractor reads it with ``dict.get``, so a model
+    output that never sets the key yields the ``0`` default and keeps the
+    annotation honest -- not merely something falsy."""
+    assert OutputProcessor()(_model_output()).is_metric == 0
 
 
 def test_is_metric_survives_when_the_nested_model_sets_it():

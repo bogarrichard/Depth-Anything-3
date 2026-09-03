@@ -68,7 +68,7 @@ class OutputProcessor:
             conf=conf,
             extrinsics=extrinsics,
             intrinsics=intrinsics,
-            is_metric=getattr(model_output, "is_metric", 0),
+            is_metric=model_output.get("is_metric", 0),
             gaussians=gaussians,
             aux=aux,
             scale_factor=scale_factor,
