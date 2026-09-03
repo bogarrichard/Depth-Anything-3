@@ -7,6 +7,7 @@ every import in the tree and checks it against the declared set.
 """
 
 import ast
+import importlib.util
 import pathlib
 import sys
 import pytest
@@ -140,3 +141,21 @@ def test_requires_python_has_an_exclusive_upper_bound():
 @pytest.mark.parametrize("extra", ["dev", "bench", "app", "gs", "streaming"])
 def test_expected_extras_exist(extra):
     assert extra in PYPROJECT["project"]["optional-dependencies"]
+
+
+def test_colmap_export_fails_loudly_without_pycolmap():
+    """pycolmap is optional, but 'colmap' must never silently no-op.
+
+    The export dispatcher advertises 'colmap' in SUPPORTED_EXPORT_FORMATS and
+    --export-format is a free string on the CLI, so a swallowed import would
+    make `da3 ... --export-format colmap` produce nothing at all.
+    """
+    from depth_anything_3.utils import export as export_mod
+
+    assert "colmap" in export_mod.SUPPORTED_EXPORT_FORMATS
+
+    if importlib.util.find_spec("pycolmap") is not None:
+        pytest.skip("pycolmap is installed; the failure path cannot be exercised")
+
+    with pytest.raises(ImportError, match="pycolmap"):
+        export_mod.export(None, "colmap", "/nonexistent")

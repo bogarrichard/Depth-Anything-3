@@ -37,7 +37,6 @@ dependencies = [
     "plyfile",
     "pillow_heif",
     "safetensors",
-    "pycolmap",
 ]
 
 [project.optional-dependencies]
@@ -59,6 +58,8 @@ gs = ["gsplat>=1.5,<2"]
 # checkpoints load either way. Kept out of `all`: xformers wheels are built
 # against one exact torch/CUDA/Python combination and frequently match none.
 xformers = ["xformers"]
+# Only utils/export/colmap.py needs this, reached solely via --export-format colmap.
+colmap = ["pycolmap"]
 # da3_streaming/: long-video / large-scene streaming pipeline. einops and
 # safetensors are already core dependencies, so only the rest are listed.
 streaming = [
@@ -70,7 +71,7 @@ streaming = [
     "rich",
     "scikit-learn",
 ]
-all = ["depth-anything-3[app,bench,gs,streaming]"]
+all = ["depth-anything-3[app,bench,colmap,gs,streaming]"]
 
 
 [project.scripts]

@@ -620,7 +620,6 @@ dependencies = [
     { name = "pillow" },
     { name = "pillow-heif" },
     { name = "plyfile" },
-    { name = "pycolmap" },
     { name = "pydantic" },
     { name = "pypose" },
     { name = "requests" },
@@ -646,6 +645,7 @@ all = [
     { name = "pandas", version = "3.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pillow" },
     { name = "prettytable" },
+    { name = "pycolmap" },
     { name = "pyyaml" },
     { name = "rich" },
     { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -659,6 +659,9 @@ bench = [
     { name = "open3d" },
     { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scikit-learn", version = "1.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+colmap = [
+    { name = "pycolmap" },
 ]
 dev = [
     { name = "hypothesis" },
@@ -687,7 +690,7 @@ xformers = [
 [package.metadata]
 requires-dist = [
     { name = "addict" },
-    { name = "depth-anything-3", extras = ["app", "bench", "gs", "streaming"], marker = "extra == 'all'" },
+    { name = "depth-anything-3", extras = ["app", "bench", "colmap", "gs", "streaming"], marker = "extra == 'all'" },
     { name = "e3nn" },
     { name = "einops" },
     { name = "faiss-gpu", marker = "extra == 'streaming'" },
@@ -711,7 +714,7 @@ requires-dist = [
     { name = "plyfile" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "prettytable", marker = "extra == 'streaming'" },
-    { name = "pycolmap" },
+    { name = "pycolmap", marker = "extra == 'colmap'" },
     { name = "pydantic" },
     { name = "pypose", specifier = ">=0.9,<0.10" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
@@ -731,7 +734,7 @@ requires-dist = [
     { name = "uvicorn" },
     { name = "xformers", marker = "extra == 'xformers'" },
 ]
-provides-extras = ["dev", "bench", "app", "gs", "xformers", "streaming", "all"]
+provides-extras = ["dev", "bench", "app", "gs", "xformers", "colmap", "streaming", "all"]
 
 [[package]]
 name = "distlib"

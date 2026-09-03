@@ -15,7 +15,6 @@
 from depth_anything_3.specs import Prediction
 from depth_anything_3.utils.export.gs import export_to_gs_ply, export_to_gs_video
 
-from .colmap import export_to_colmap
 from .depth_vis import export_to_depth_vis
 from .feat_vis import export_to_feat_vis
 from .glb import export_to_glb
@@ -65,6 +64,16 @@ def export(
     elif export_format == "gs_video":
         export_to_gs_video(prediction, export_dir, **kwargs.get(export_format, {}))
     elif export_format == "colmap":
+        # Imported lazily so pycolmap stays optional: it is a hard-to-build wheel
+        # needed by this one format. Must stay an import (not a guarded no-op) so
+        # `--export-format colmap` fails loudly rather than silently writing nothing.
+        try:
+            from .colmap import export_to_colmap
+        except ImportError as exc:  # pragma: no cover - depends on the install
+            raise ImportError(
+                "Export format 'colmap' requires pycolmap. "
+                'Install it with: pip install "depth-anything-3[colmap]"'
+            ) from exc
         export_to_colmap(prediction, export_dir, **kwargs.get(export_format, {}))
     else:
         raise ValueError(f"Unsupported export format: {export_format}")

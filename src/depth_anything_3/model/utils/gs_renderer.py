@@ -36,8 +36,7 @@ try:
 except ImportError:
     logger.warn(
         "Dependency `gsplat` is required for rendering 3DGS. "
-        "Install via: pip install git+https://github.com/nerfstudio-project/"
-        "gsplat.git@0b4dddf04cb687367602c01196913cde6a743d70"
+        'Install via: pip install "depth-anything-3[gs]"'
     )
 
 
