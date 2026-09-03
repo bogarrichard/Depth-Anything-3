@@ -703,7 +703,6 @@ dependencies = [
     { name = "trimesh" },
     { name = "typer" },
     { name = "uvicorn" },
-    { name = "xformers" },
 ]
 
 [package.optional-dependencies]
@@ -753,6 +752,9 @@ streaming = [
     { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scikit-learn", version = "1.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
+xformers = [
+    { name = "xformers" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -800,9 +802,9 @@ requires-dist = [
     { name = "trimesh" },
     { name = "typer", specifier = ">=0.9.0" },
     { name = "uvicorn" },
-    { name = "xformers" },
+    { name = "xformers", marker = "extra == 'xformers'" },
 ]
-provides-extras = ["dev", "bench", "app", "gs", "streaming", "all"]
+provides-extras = ["dev", "bench", "app", "gs", "xformers", "streaming", "all"]
 
 [[package]]
 name = "distlib"
