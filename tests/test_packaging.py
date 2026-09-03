@@ -208,20 +208,19 @@ def test_the_ci_matrix_stays_inside_the_declared_python_range():
 # ---------------------------------------------------------------------------
 # extras
 # ---------------------------------------------------------------------------
-@pytest.mark.parametrize("extra", ["dev", "bench", "app", "gs", "colmap", "streaming", "xformers"])
+@pytest.mark.parametrize("extra", ["dev", "bench", "app", "gs", "colmap", "streaming"])
 def test_expected_extras_exist(extra):
     assert extra in EXTRAS
 
 
 def test_the_all_extra_bundles_every_optional_extra_except_the_documented_exclusions():
-    """``xformers`` is out of ``all`` on purpose -- its wheels match one exact
-    torch/CUDA/Python combination. ``dev`` is not a user-facing extra."""
+    """``dev`` is not a user-facing extra."""
     referenced = set()
     for spec in EXTRAS["all"]:
         match = re.search(r"\[(.*)\]", spec)
         if match:
             referenced |= {name.strip() for name in match.group(1).split(",")}
-    assert referenced == set(EXTRAS) - {"all", "dev", "xformers"}
+    assert referenced == set(EXTRAS) - {"all", "dev"}
 
 
 def test_the_all_extra_only_points_at_this_package():

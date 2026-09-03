@@ -1,15 +1,18 @@
-"""The xformers SwiGLU fallback in ``model/dinov2/layers/swiglu_ffn.py``.
+"""``model/dinov2/layers/swiglu_ffn.py``.
 
-``xformers`` is an optional extra, deliberately kept out of ``all``: its
-wheels are built against one exact torch/CUDA/Python combination. The package
-therefore falls back to a pure-torch SwiGLU, and the whole arrangement rests
-on one claim -- **the fallback is parameter-compatible with the fused
-kernel**, so a ``vitg`` checkpoint loads either way.
+Used to wrap an xformers fused kernel with a pure-torch fallback for when
+xformers was unavailable or mismatched the local torch/CUDA/Python build.
+Removed: a GPU benchmark (RTX PRO 5000, torch 2.13/cu130/py3.13) showed the
+xformers path silently degraded to its own eager Python SwiGLU on that stack
+(xformers couldn't load its C++/CUDA extension) and was indistinguishable in
+speed from the pure-torch implementation here -- while `torch.compile` on the
+pure-torch implementation beat both by ~12%. ``SwiGLUFFNFused`` is now plain
+pure-torch, with no fused-kernel dependency at all.
 
-That claim was verified once by hand. These tests keep it verified: the
-parameter layout and the hidden-width rounding are pinned unconditionally,
-and when xformers *is* installed the two implementations are compared
-directly.
+These tests pin what still matters: the checkpoint-visible parameter layout
+and the hidden-width rounding rule (``vitg`` checkpoints were saved with
+xformers' 2/3-rounded hidden width, so that arithmetic must not drift even
+though nothing here calls xformers anymore).
 
 Only ``vitg`` reaches this path (``dinov2.py`` picks ``swiglufused`` for that
 backbone alone), which is exactly why it is the least likely thing to be
@@ -21,7 +24,6 @@ import torch
 import torch.nn.functional as F
 
 from depth_anything_3.model.dinov2.layers.swiglu_ffn import (
-    XFORMERS_AVAILABLE,
     SwiGLUFFN,
     SwiGLUFFNFused,
 )
@@ -88,37 +90,15 @@ def test_defaults_follow_the_input_width():
     assert layer.w3.weight.shape == (IN, IN)
 
 
-def test_the_availability_flag_tells_the_truth():
-    import importlib.util
-
-    assert XFORMERS_AVAILABLE == (importlib.util.find_spec("xformers") is not None)
-
-
-# ---------------------------------------------------------------------------
-# against xformers itself, where it is installed
-# ---------------------------------------------------------------------------
-@pytest.fixture
-def fused_and_fallback():
-    if not XFORMERS_AVAILABLE:
-        pytest.skip("xformers is not installed; the comparison cannot be made")
+def test_a_checkpoint_saved_with_the_rounded_width_loads_directly():
+    """``SwiGLUFFNFused`` rounds its hidden width; a plain ``SwiGLUFFN`` built
+    with that already-rounded width must accept the same state dict -- this is
+    what let old xformers-fused checkpoints load into the pure-torch class
+    without a shape mismatch."""
     hidden = _expected_hidden(HIDDEN)
     fused = SwiGLUFFNFused(in_features=IN, hidden_features=HIDDEN, out_features=OUT)
-    fallback = SwiGLUFFN(in_features=IN, hidden_features=hidden, out_features=OUT)
-    return fused, fallback
-
-
-def test_a_checkpoint_loads_into_either_implementation(fused_and_fallback):
-    fused, fallback = fused_and_fallback
-    fallback.load_state_dict(fused.state_dict())
-    fused.load_state_dict(fallback.state_dict())
-
-
-def test_the_two_implementations_agree_numerically(fused_and_fallback):
-    fused, fallback = fused_and_fallback
-    fallback.load_state_dict(fused.state_dict())
-    x = torch.randn(4, IN)
-    with torch.no_grad():
-        torch.testing.assert_close(fused(x), fallback(x), atol=1e-6, rtol=1e-5)
+    plain = SwiGLUFFN(in_features=IN, hidden_features=hidden, out_features=OUT)
+    plain.load_state_dict(fused.state_dict())
 
 
 # ---------------------------------------------------------------------------

@@ -52,11 +52,6 @@ dev = [
 bench = ["open3d", "scikit-learn"]
 app = ["gradio>=5", "pillow>=9.0"]
 gs = ["gsplat>=1.5,<2", "e3nn"]
-# Optional fused SwiGLU kernels for the `vitg` backbone only. The pure-torch
-# fallback in model/dinov2/layers/swiglu_ffn.py is parameter-compatible, so
-# checkpoints load either way. Kept out of `all`: xformers wheels are built
-# against one exact torch/CUDA/Python combination and frequently match none.
-xformers = ["xformers"]
 # Only utils/export/colmap.py needs this, reached solely via --export-format colmap.
 colmap = ["pycolmap"]
 # da3_streaming/: long-video / large-scene streaming pipeline. einops and
