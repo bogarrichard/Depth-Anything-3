@@ -117,6 +117,28 @@ def quat_to_mat(quaternions: torch.Tensor) -> torch.Tensor:
     return o.reshape(quaternions.shape[:-1] + (3, 3))
 
 
+def so3_to_mat(rotation) -> torch.Tensor:
+    """Rotation matrices from either a raw XYZW quaternion tensor or a ``pypose.SO3``.
+
+    Deliberately routes through :func:`quat_to_mat` instead of calling
+    ``pypose.SO3.matrix()``. Do not "simplify" this back: ``SO3Type.matrix``
+    builds the matrix by rotating three basis vectors through ``Act``, which is
+    both slower (~1.8x at 2M quaternions) and impossible to ``torch.compile`` --
+    it calls ``torch.eye(3, dtype=input.dtype)``, and dynamo resolves a
+    LieTensor's dtype to ``torch.Size``. The closed form here compiles cleanly
+    and produces bit-identical output.
+
+    Args:
+        rotation: ``(..., 4)`` scalar-last (XYZW) quaternions, as a plain tensor
+            or any ``pypose`` LieTensor carrying them.
+
+    Returns:
+        Rotation matrices of shape ``(..., 3, 3)``.
+    """
+    tensor = rotation.tensor() if hasattr(rotation, "tensor") else rotation
+    return quat_to_mat(tensor)
+
+
 def mat_to_quat(matrix: torch.Tensor) -> torch.Tensor:
     """
     Convert rotations given as rotation matrices to quaternions.

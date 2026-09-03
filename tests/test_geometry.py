@@ -16,6 +16,7 @@ from depth_anything_3.utils.geometry import (
     as_homogeneous,
     mat_to_quat,
     quat_to_mat,
+    so3_to_mat,
     standardize_quaternion,
     transpose_last_two_axes,
 )
@@ -112,3 +113,23 @@ def test_as_homogeneous_rejects_bad_shapes():
         as_homogeneous(torch.zeros(2, 5, 5))
     with pytest.raises(TypeError):
         as_homogeneous([[1, 2], [3, 4]])
+
+
+def test_so3_to_mat_accepts_a_raw_tensor():
+    q = torch.nn.functional.normalize(torch.randn(32, 4, dtype=torch.float64), dim=-1)
+    torch.testing.assert_close(so3_to_mat(q), quat_to_mat(q))
+
+
+def test_so3_to_mat_accepts_a_pypose_so3():
+    """The point of the helper: pypose types in, closed-form matrix out."""
+    pp = pytest.importorskip("pypose")
+    q = torch.nn.functional.normalize(torch.randn(32, 4, dtype=torch.float64), dim=-1)
+    # Bit-identical, not merely close -- it is the same code path on the same data.
+    assert torch.equal(so3_to_mat(pp.SO3(q)), quat_to_mat(q))
+
+
+def test_so3_to_mat_agrees_with_pypose_matrix():
+    """Guards the shortcut: if pypose ever changed convention, this would catch it."""
+    pp = pytest.importorskip("pypose")
+    q = torch.nn.functional.normalize(torch.randn(32, 4, dtype=torch.float64), dim=-1)
+    torch.testing.assert_close(so3_to_mat(pp.SO3(q)), pp.SO3(q).matrix().to(torch.float64))
