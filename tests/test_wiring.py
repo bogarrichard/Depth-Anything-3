@@ -224,22 +224,32 @@ def test_the_backend_payload_is_not_empty():
     assert _backend_payload_keys()
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Known gap: InferenceRequest has no use_ray_pose or ref_view_strategy field, "
-        "and pydantic drops unknown keys silently -- so `da3 ... --use-backend "
-        "--ref-view-strategy first` is ignored by the server. Remove this xfail "
-        "together with the fix."
-    ),
-)
 def test_every_payload_key_is_a_field_the_backend_model_accepts():
-    """A key the server model does not declare is dropped without a word,
-    so the option appears to work and does nothing."""
+    """A key the server model does not declare is dropped without a word, so
+    the option appears to work and does nothing.
+
+    ``use_ray_pose`` and ``ref_view_strategy`` were exactly that: sent by the
+    client, undeclared on the server, silently discarded by pydantic.
+    """
     from depth_anything_3.services.backend import InferenceRequest
 
     accepted = set(InferenceRequest.model_fields)
     assert _backend_payload_keys() <= accepted
+
+
+def test_every_declared_request_field_reaches_the_model():
+    """The other direction: a field the request declares but the task builder
+    never reads is an option the server advertises and ignores."""
+    from depth_anything_3.services import backend as backend_module
+
+    source = _tree_of(backend_module._run_inference_task)
+    forwarded = _dict_literal_keys(source, "inference_kwargs") | _subscript_assigned_keys(
+        source, "inference_kwargs"
+    )
+    # `image_paths` is renamed to `image` on the way in; `export_dir` is
+    # validated before being added under its own name.
+    declared = set(backend_module.InferenceRequest.model_fields) - {"image_paths"}
+    assert declared <= forwarded, f"never reaches the model: {sorted(declared - forwarded)}"
 
 
 def test_the_backend_rejects_export_formats_the_dispatcher_cannot_handle():
