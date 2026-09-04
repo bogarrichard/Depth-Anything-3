@@ -20,9 +20,9 @@ jobs:
         with:
           enable-cache: true
       - name: ruff check
-        run: uvx ruff check src da3_streaming tests
+        run: uvx ruff check src da3_streaming tests demo.py notebooks
       - name: ruff format --check
-        run: uvx ruff format --check src da3_streaming tests
+        run: uvx ruff format --check src da3_streaming tests demo.py notebooks
 
   lock:
     name: lockfile is current
