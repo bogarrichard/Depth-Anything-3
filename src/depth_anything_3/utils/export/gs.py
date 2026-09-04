@@ -14,7 +14,7 @@
 
 import os
 from typing import Literal, Optional
-import moviepy.editor as mpy
+import imageio
 import torch
 
 from depth_anything_3.model.utils.gs_renderer import run_renderer_in_chunk_w_trj_mode
@@ -124,9 +124,7 @@ def export_to_gs_video(
         VIDEO_QUALITY_MAP[video_quality]["crf"],
         "-preset",
         VIDEO_QUALITY_MAP[video_quality]["preset"],
-        "-pix_fmt",
-        "yuv420p",
-    ]  # best compatibility
+    ]
 
     os.makedirs(os.path.join(export_dir, "gs_video"), exist_ok=True)
     for idx in range(color.shape[0]):
@@ -140,15 +138,15 @@ def export_to_gs_video(
         )  # T x H x W x C, uint8, numpy()
 
         fps = 24
-        clip = mpy.ImageSequenceClip(frames, fps=fps)
         output_name = f"{idx:04d}_{trj_mode}" if output_name is None else output_name
         save_path = os.path.join(export_dir, f"gs_video/{output_name}.mp4")
-        # clip.write_videofile(save_path, codec="libx264", audio=False, bitrate="4000k")
-        clip.write_videofile(
+        with imageio.get_writer(
             save_path,
-            codec="libx264",
-            audio=False,
             fps=fps,
-            ffmpeg_params=ffmpeg_params,
-        )
+            codec="libx264",
+            pixelformat="yuv420p",
+            output_params=ffmpeg_params,
+        ) as writer:
+            for frame in frames:
+                writer.append_data(frame)
     return
