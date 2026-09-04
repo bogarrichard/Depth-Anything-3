@@ -1,5 +1,14 @@
 # Depth Anything 3
 
+```{note}
+This is the documentation for [bogarrichard's fork](https://github.com/bogarrichard/Depth-Anything-3)
+of Depth Anything 3 -- an unofficial, community-maintained build with
+modernization work (dependency, tooling and packaging changes) on top of
+the original project. It is not published or endorsed by ByteDance. For the
+official upstream project, see
+[ByteDance-Seed/Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3).
+```
+
 **Depth Anything 3 (DA3)** predicts spatially consistent geometry from
 arbitrary visual inputs, with or without known camera poses. In pursuit of
 minimal modeling, DA3 rests on two key insights:
