@@ -24,6 +24,16 @@ def export_to_depth_vis(
     prediction: Prediction,
     export_dir: str,
 ):
+    """Write side-by-side image/depth JPEGs to ``depth_vis/<index>.jpg``.
+
+    Each output frame concatenates the processed input image with a
+    colorized depth map, for quick visual inspection of prediction quality.
+
+    Args:
+        prediction: The :class:`~depth_anything_3.specs.Prediction` to
+            visualize.
+        export_dir: Directory to write ``depth_vis/<index>.jpg`` into.
+    """
     # Use prediction.processed_images, which is already processed image data
     if prediction.processed_images is None:
         raise ValueError("prediction.processed_images is required but not available")

@@ -30,6 +30,25 @@ def export_to_colmap(
     conf_thresh_percentile: float = 40.0,
     process_res_method: str = "upper_bound_resize",
 ) -> None:
+    """Write a prediction as a COLMAP sparse reconstruction.
+
+    Builds a point cloud from the predicted depth maps (confidence-filtered)
+    and a COLMAP ``Reconstruction`` with one rig/frame/image per input view,
+    then writes it out in COLMAP's binary model format. Requires ``pycolmap``
+    (the ``colmap`` extra); reached only via ``--export-format colmap``.
+
+    Args:
+        prediction: The :class:`~depth_anything_3.specs.Prediction` to
+            export, with ``depth``, ``conf``, ``extrinsics`` and
+            ``intrinsics`` populated.
+        export_dir: Directory to write the COLMAP reconstruction into.
+        image_paths: File paths of the original input images, in the same
+            order as ``prediction``, used to size and name the COLMAP images.
+        conf_thresh_percentile: Lower percentile for the confidence
+            threshold; points below it are dropped from the point cloud.
+        process_res_method: The resize method used during preprocessing,
+            needed to map camera intrinsics back to the original image size.
+    """
     # 1. Data preparation
     conf_thresh = np.percentile(prediction.conf, conf_thresh_percentile)
     points, colors = _depths_to_world_points_with_colors(

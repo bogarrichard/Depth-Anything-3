@@ -43,6 +43,28 @@ def export(
     export_dir: str,
     **kwargs,
 ):
+    """Dispatch a prediction to one or more exporters by format name.
+
+    Called by :meth:`depth_anything_3.api.DepthAnything3.inference` when
+    ``export_dir`` is given. ``export_format`` may combine several of
+    :data:`SUPPORTED_EXPORT_FORMATS` with ``-`` (e.g. ``"mini_npz-glb"``) to
+    run each exporter in turn on the same prediction.
+
+    Args:
+        prediction: The :class:`~depth_anything_3.specs.Prediction` to
+            export.
+        export_format: One of :data:`SUPPORTED_EXPORT_FORMATS`, or several
+            joined with ``-``. See that format's ``export_to_*`` function
+            (:mod:`depth_anything_3.utils.export`) for its own parameters,
+            passed via ``kwargs[export_format]``.
+        export_dir: Directory to write the exported files into.
+        **kwargs: Per-format extra arguments, keyed by format name -- e.g.
+            ``kwargs["glb"] = {"num_max_points": 500_000}``.
+
+    Raises:
+        ValueError: If ``export_format`` (after splitting on ``-``) is not
+            in :data:`SUPPORTED_EXPORT_FORMATS`.
+    """
     if "-" in export_format:
         export_formats = export_format.split("-")
         for export_format in export_formats:

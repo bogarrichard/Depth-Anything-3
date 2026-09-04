@@ -37,6 +37,22 @@ def export_to_gs_ply(
         int
     ] = 1,  # export GS every N views, useful for extremely dense inputs
 ):
+    """Write the predicted 3D Gaussians to a single ``.ply`` file.
+
+    Compatible with standard 3DGS viewers such as `SuperSplat
+    <https://superspl.at/editor>`_ or `SPARK <https://sparkjs.dev/viewer/>`_.
+    Requires ``infer_gs=True`` on the ``inference()`` call that produced
+    ``prediction`` -- only ``da3-giant`` and ``da3nested-giant-large`` support
+    the Gaussian branch.
+
+    Args:
+        prediction: A :class:`~depth_anything_3.specs.Prediction` with
+            ``infer_gs=True`` gaussians populated.
+        export_dir: Directory to write ``gs_ply/0000.ply`` into.
+        gs_views_interval: Export gaussians from every Nth view, useful for
+            dense multi-view inputs. ``None`` picks an interval that keeps
+            roughly 12 views in total.
+    """
     gs_world = prediction.gaussians
     pred_depth = torch.from_numpy(prediction.depth).unsqueeze(-1).to(gs_world.means)  # v h w 1
     idx = 0
@@ -81,6 +97,38 @@ def export_to_gs_video(
     output_name: Optional[str] = None,
     video_quality: Literal["low", "medium", "high"] = "high",
 ) -> None:
+    """Rasterize the predicted 3D Gaussians into a video.
+
+    Requires ``infer_gs=True`` on the ``inference()`` call that produced
+    ``prediction`` -- only ``da3-giant`` and ``da3nested-giant-large`` support
+    the Gaussian branch. Renders along a predefined camera trajectory
+    (``trj_mode``) unless explicit ``extrinsics``/``intrinsics`` are given.
+
+    Args:
+        prediction: A :class:`~depth_anything_3.specs.Prediction` with
+            ``infer_gs=True`` gaussians populated.
+        export_dir: Directory to write ``gs_video/<name>.mp4`` into.
+        extrinsics: Optional world-to-camera poses for the rendered views,
+            shape ``(1, M, 4, 4)``. Falls back to the predicted input poses.
+        intrinsics: Optional camera intrinsics for the rendered views, shape
+            ``(1, M, 3, 3)``. Falls back to the predicted input intrinsics.
+        out_image_hw: Optional output resolution ``(H, W)``. Falls back to
+            the input resolution.
+        chunk_size: Number of views rasterized per batch.
+        trj_mode: Predefined camera trajectory used when no explicit
+            ``extrinsics`` are given. Ignored for single-view input, which
+            always uses ``"wander"``.
+        color_mode: Rasterization color mode, same as ``render_mode`` in
+            `gsplat <https://docs.gsplat.studio/main/apis/rasterization.html#gsplat.rasterization>`_.
+        vis_depth: How the depth panel is combined with RGB in the output
+            frame -- ``"hcat"``/``"vcat"`` concatenate them horizontally or
+            vertically; ``None`` renders RGB only.
+        enable_tqdm: Whether to display a progress bar during rendering.
+        output_name: File name (without extension) for the rendered video.
+            Defaults to ``"<view_index>_<trj_mode>"``.
+        video_quality: ``"low"``/``"medium"``/``"high"`` trade off file size
+            against quality (maps to an ffmpeg CRF/preset pair).
+    """
     gs_world = prediction.gaussians
     # if target poses are not provided, render the (smooth/interpolate) input poses
     if extrinsics is not None:

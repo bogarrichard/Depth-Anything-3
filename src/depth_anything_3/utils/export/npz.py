@@ -24,6 +24,17 @@ def export_to_npz(
     prediction: Prediction,
     export_dir: str,
 ):
+    """Write the full prediction to ``exports/npz/results.npz``.
+
+    Includes ``image`` (the processed input images) alongside ``depth``,
+    and ``conf``/``extrinsics``/``intrinsics`` when present -- the more
+    complete counterpart to :func:`export_to_mini_npz`, for downstream
+    processing that also needs the original imagery.
+
+    Args:
+        prediction: The :class:`~depth_anything_3.specs.Prediction` to save.
+        export_dir: Directory to write ``exports/npz/results.npz`` into.
+    """
     output_file = os.path.join(export_dir, "exports", "npz", "results.npz")
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
@@ -55,6 +66,16 @@ def export_to_mini_npz(
     prediction: Prediction,
     export_dir: str,
 ):
+    """Write depth and camera parameters to ``exports/mini_npz/results.npz``.
+
+    Contains only ``depth`` plus ``conf``/``extrinsics``/``intrinsics`` when
+    present -- deliberately excludes the input images, for lightweight
+    storage of just the geometry.
+
+    Args:
+        prediction: The :class:`~depth_anything_3.specs.Prediction` to save.
+        export_dir: Directory to write ``exports/mini_npz/results.npz`` into.
+    """
     output_file = os.path.join(export_dir, "exports", "mini_npz", "results.npz")
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
