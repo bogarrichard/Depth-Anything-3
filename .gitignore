@@ -16,6 +16,7 @@ htmlcov/
 .tox/
 gallery*/
 debug*/
+demo_output/
 DA3HF*/
 gradio_workspace/
 eval_workspace/

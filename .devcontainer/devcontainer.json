@@ -1,0 +1,15 @@
+{
+  "name": "Depth Anything 3 (CPU demo)",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "onCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh",
+  "postCreateCommand": "$HOME/.local/bin/uv sync",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb"
+  }
+}

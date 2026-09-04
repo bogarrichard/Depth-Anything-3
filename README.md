@@ -11,6 +11,9 @@
 <a href='https://depth-anything-3.github.io'><img src='https://img.shields.io/badge/Project_Page-Depth Anything 3-green' alt='Project Page'></a>
 <a href='https://huggingface.co/spaces/depth-anything/Depth-Anything-3'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-blue'></a>
 <a href='https://bogarrichard.github.io/Depth-Anything-3/'><img src='https://img.shields.io/badge/docs-GitHub%20Pages-blue'></a>
+<a href='https://github.com/bogarrichard/Depth-Anything-3/actions/workflows/ci.yml'><img src='https://github.com/bogarrichard/Depth-Anything-3/actions/workflows/ci.yml/badge.svg?branch=dev' alt='CI'></a>
+<a href='https://colab.research.google.com/github/bogarrichard/Depth-Anything-3/blob/dev/notebooks/da3.ipynb'><img src='https://colab.research.google.com/assets/colab-badge.svg' alt='Open In Colab'></a>
+<a href='https://codespaces.new/bogarrichard/Depth-Anything-3?ref=dev'><img src='https://github.com/codespaces/badge.svg' alt='Open in GitHub Codespaces'></a>
 
 </div>
 
@@ -69,6 +72,11 @@ prediction = model.inference(["image1.png", "image2.png"])
 ```bash
 da3 auto path/to/input --export-dir ./output
 ```
+
+**Try it without installing anything locally:**
+- Click **Open In Colab** above to run [`notebooks/da3.ipynb`](notebooks/da3.ipynb) on a free GPU.
+- Click **Open in GitHub Codespaces** above for a full dev environment
+  (CPU only), then run `uv run python demo.py`.
 
 See the [installation guide](https://bogarrichard.github.io/Depth-Anything-3/installation.html)
 for extras (Gradio app, Gaussian Splatting, COLMAP export, streaming), and
