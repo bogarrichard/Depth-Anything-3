@@ -15,5 +15,9 @@ See {doc}`ref_view_strategy`.
 directly from the code, so they can't go stale.
 
 **I found a bug, or want to contribute.**
-Open an issue or pull request on
-[GitHub](https://github.com/ByteDance-Seed/Depth-Anything-3).
+Open an issue or pull request against
+[this fork](https://github.com/bogarrichard/Depth-Anything-3) -- it's what
+this documentation describes (packaging, tooling, and dependency changes on
+top of the original project). For the model/architecture itself, the
+[upstream project](https://github.com/ByteDance-Seed/Depth-Anything-3) is
+the canonical place.

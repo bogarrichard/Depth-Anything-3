@@ -2,6 +2,19 @@
 
 Requires Python 3.10–3.13.
 
+```{note}
+This page documents [bogarrichard's fork](https://github.com/bogarrichard/Depth-Anything-3)
+specifically -- the `uv`/lockfile workflow, extras layout, and dependency
+versions below are this fork's, and may not match the upstream
+[ByteDance-Seed/Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3)
+project. Clone this fork, not upstream, to follow these instructions:
+```
+
+```bash
+git clone https://github.com/bogarrichard/Depth-Anything-3.git
+cd Depth-Anything-3
+```
+
 `````{tab-set}
 
 ````{tab-item} uv
@@ -50,9 +63,10 @@ pip install -e ".[all]"       # ALL
 
 `all` bundles every user-facing extra except `dev` and `docs`.
 
-For DA3-Streaming specifically, clone the repository with `--recursive` --
-it pulls in a git submodule the streaming pipeline needs. See
-{doc}`streaming` for the full setup.
+For DA3-Streaming specifically, the plain clone above isn't enough -- it
+needs a git submodule too. Either clone with `--recursive` from the start,
+or run `git submodule update --init --recursive` in an existing checkout.
+See {doc}`streaming` for the full setup.
 
 ## Next step
 

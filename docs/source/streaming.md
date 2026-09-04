@@ -19,7 +19,7 @@ needs the `streaming` extra plus a git submodule -- see below.
 submodule this pipeline needs:
 
 ```bash
-git clone --recursive https://github.com/ByteDance-Seed/Depth-Anything-3.git
+git clone --recursive https://github.com/bogarrichard/Depth-Anything-3.git
 ```
 
 Forgot `--recursive`?

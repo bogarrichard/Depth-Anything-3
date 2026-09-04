@@ -9,7 +9,7 @@ Full setup instructions, output format, and benchmark results:
 Quick start:
 
 ```bash
-git clone --recursive https://github.com/ByteDance-Seed/Depth-Anything-3.git
+git clone --recursive https://github.com/bogarrichard/Depth-Anything-3.git
 pip install -e ".[streaming]"
 bash ./scripts/download_weights.sh
 python da3_streaming.py --image_dir ./path_of_images

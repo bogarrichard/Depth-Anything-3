@@ -114,9 +114,9 @@ prediction = model.inference(video_frames, ref_view_strategy="middle")
 ## Custom model architectures
 
 The model architecture is defined in
-[`DepthAnything3Net`](https://github.com/ByteDance-Seed/Depth-Anything-3/blob/main/src/depth_anything_3/model/da3.py)
+[`DepthAnything3Net`](https://github.com/bogarrichard/Depth-Anything-3/blob/dev/src/depth_anything_3/model/da3.py)
 and configured via a YAML file under
-[`src/depth_anything_3/configs`](https://github.com/ByteDance-Seed/Depth-Anything-3/tree/main/src/depth_anything_3/configs).
+[`src/depth_anything_3/configs`](https://github.com/bogarrichard/Depth-Anything-3/tree/dev/src/depth_anything_3/configs).
 Input/output processing is handled by
 {class}`~depth_anything_3.api.DepthAnything3`. To try a new architecture,
 write a config file:

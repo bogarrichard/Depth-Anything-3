@@ -50,7 +50,7 @@ that function's own keyword arguments.
 `--export-format colmap` (`export_to_colmap`) needs the `colmap` extra
 (`pycolmap`) and is left out of this auto-generated reference for that
 reason -- see its docstring directly in
-[`utils/export/colmap.py`](https://github.com/ByteDance-Seed/Depth-Anything-3/blob/main/src/depth_anything_3/utils/export/colmap.py)
+[`utils/export/colmap.py`](https://github.com/bogarrichard/Depth-Anything-3/blob/dev/src/depth_anything_3/utils/export/colmap.py)
 on GitHub.
 ```
 

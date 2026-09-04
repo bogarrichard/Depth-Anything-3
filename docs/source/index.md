@@ -27,7 +27,7 @@ on public academic datasets.
 [Paper (arXiv)](https://arxiv.org/abs/2511.10647) ·
 [Project page](https://depth-anything-3.github.io) ·
 [Hugging Face demo](https://huggingface.co/spaces/depth-anything/Depth-Anything-3) ·
-[GitHub](https://github.com/ByteDance-Seed/Depth-Anything-3)
+[This fork on GitHub](https://github.com/bogarrichard/Depth-Anything-3)
 ```
 
 ## Model Cards
