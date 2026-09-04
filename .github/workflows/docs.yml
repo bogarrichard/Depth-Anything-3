@@ -1,0 +1,53 @@
+name: Docs
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'docs/**'
+      - 'src/depth_anything_3/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install
+        run: uv sync --extra docs
+      - name: sphinx-build
+        # -W: warnings fail the build, so a broken autodoc import or an
+        # invalid cross-reference is caught here instead of silently
+        # shipping an incomplete page. --keep-going: report every warning
+        # in one run rather than stopping at the first.
+        run: uv run sphinx-build -b html -W --keep-going docs/source docs/build/html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build/html
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
