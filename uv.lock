@@ -607,7 +607,6 @@ dependencies = [
     { name = "omegaconf" },
     { name = "opencv-python-headless" },
     { name = "pillow" },
-    { name = "pillow-heif" },
     { name = "plyfile" },
     { name = "pydantic" },
     { name = "pypose" },
@@ -634,6 +633,7 @@ all = [
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pillow" },
+    { name = "pillow-heif" },
     { name = "prettytable" },
     { name = "pycolmap" },
     { name = "pyyaml" },
@@ -644,6 +644,7 @@ all = [
 app = [
     { name = "gradio" },
     { name = "pillow" },
+    { name = "pillow-heif" },
 ]
 bench = [
     { name = "open3d" },
@@ -697,7 +698,7 @@ requires-dist = [
     { name = "pandas", marker = "extra == 'streaming'" },
     { name = "pillow" },
     { name = "pillow", marker = "extra == 'app'", specifier = ">=9.0" },
-    { name = "pillow-heif" },
+    { name = "pillow-heif", marker = "extra == 'app'" },
     { name = "plyfile" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "prettytable", marker = "extra == 'streaming'" },
