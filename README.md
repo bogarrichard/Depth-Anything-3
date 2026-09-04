@@ -33,6 +33,15 @@ depth and pose estimation, trained exclusively on public academic datasets.
 Installation (uv/pip), model cards, Python API and CLI usage and reference,
 the benchmark pipeline, DA3-Streaming, and FAQ all live there.
 
+> Not live yet on Read the Docs -- build and view it locally in the
+> meantime:
+> ```bash
+> uv sync --extra docs
+> uv run sphinx-build -b html docs/source docs/build/html
+> uv run python -m http.server -d docs/build/html 8000
+> ```
+> Then open `http://localhost:8000`.
+
 ## 📰 News
 
 - **11-12-2025:** New models and [DA3-Streaming](https://depth-anything-3.readthedocs.io/en/latest/streaming.html) released -- ultra-long video inference under 12GB GPU memory via sliding-window streaming.
