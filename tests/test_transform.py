@@ -1,17 +1,17 @@
 """``model/utils/transform.py``: the pose encoding the camera head emits.
 
-Two separate contracts live in this module and both are load-bearing for
-pretrained checkpoints:
+The **pose encoding layout** -- 9 numbers, ``[t(3) | quat_xyzw(4) | fov_h |
+fov_w]`` -- is what ``CameraDec`` was trained to produce, and is load-bearing
+for pretrained checkpoints.
 
-* the **pose encoding layout** -- 9 numbers, ``[t(3) | quat_xyzw(4) | fov_h |
-  fov_w]`` -- which is what ``CameraDec`` was trained to produce, and
-* the **quaternion helpers**, which are a near-verbatim second copy of the
-  ones in ``utils/geometry.py``.
-
-The copies are checked against scipy *individually* rather than against each
-other: "the two agree" is satisfied by two identically wrong functions. The
-pairwise comparison is kept as well, but only as the safety net for merging
-them (backlog item 8) -- do not delete it before that refactor.
+``quat_to_mat``, ``mat_to_quat`` and ``standardize_quaternion`` used to be a
+near-verbatim second copy of the ones in ``utils/geometry.py`` (backlog item
+8). Merged 2026-09-04: this module now imports them from there instead of
+redefining them. They are checked against scipy *individually* rather than
+just against each other: "the two agree" would be satisfied by two
+identically wrong functions. ``test_the_two_copies_still_agree`` is now a
+same-object identity check rather than a comparison of two implementations --
+kept anyway as a regression guard in case a copy is ever reintroduced.
 """
 
 import numpy as np

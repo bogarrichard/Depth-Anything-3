@@ -84,6 +84,12 @@ def affine_inverse_np(A: np.ndarray):
     )
 
 
+# quat_to_mat, mat_to_quat, _sqrt_positive_part and standardize_quaternion
+# below are adapted from PyTorch3D's rotation_conversions.py:
+#
+#   Copyright (c) Meta Platforms, Inc. and affiliates. All rights reserved.
+#   Licensed under the BSD License for PyTorch3D; see THIRD_PARTY_NOTICES.md
+#   in the repository root for the full license text.
 def quat_to_mat(quaternions: torch.Tensor) -> torch.Tensor:
     """
     Quaternion Order: XYZW or say ijkr, scalar-last
@@ -117,6 +123,8 @@ def quat_to_mat(quaternions: torch.Tensor) -> torch.Tensor:
     return o.reshape(quaternions.shape[:-1] + (3, 3))
 
 
+# so3_to_mat is original to this project, not PyTorch3D -- it just calls
+# quat_to_mat above.
 def so3_to_mat(rotation) -> torch.Tensor:
     """Rotation matrices from either a raw XYZW quaternion tensor or a ``pypose.SO3``.
 
