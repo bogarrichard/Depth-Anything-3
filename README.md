@@ -10,7 +10,7 @@
 <a href="https://arxiv.org/abs/2511.10647"><img src='https://img.shields.io/badge/arXiv-Depth Anything 3-red' alt='Paper PDF'></a>
 <a href='https://depth-anything-3.github.io'><img src='https://img.shields.io/badge/Project_Page-Depth Anything 3-green' alt='Project Page'></a>
 <a href='https://huggingface.co/spaces/depth-anything/Depth-Anything-3'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-blue'></a>
-<a href='https://depth-anything-3.readthedocs.io'><img src='https://img.shields.io/badge/docs-Read%20the%20Docs-8CA1AF'></a>
+<a href='https://bogarrichard.github.io/Depth-Anything-3/'><img src='https://img.shields.io/badge/docs-GitHub%20Pages-blue'></a>
 
 </div>
 
@@ -28,13 +28,16 @@ depth and pose estimation, trained exclusively on public academic datasets.
   <img src="assets/images/da3_radar.png" alt="Depth Anything 3" width="100%">
 </p>
 
-## 📚 Full documentation: [depth-anything-3.readthedocs.io](https://depth-anything-3.readthedocs.io)
+## 📚 Full documentation: [bogarrichard.github.io/Depth-Anything-3](https://bogarrichard.github.io/Depth-Anything-3/)
 
 Installation (uv/pip), model cards, Python API and CLI usage and reference,
-the benchmark pipeline, DA3-Streaming, and FAQ all live there.
+the benchmark pipeline, DA3-Streaming, and FAQ all live there. Published
+automatically from `docs/source` on every push to `dev`
+(`.github/workflows/docs.yml`).
 
-> Not live yet on Read the Docs -- build and view it locally in the
-> meantime:
+> Not live yet -- GitHub Pages needs to be enabled once in this repo's own
+> Settings before the workflow can publish. Build and view it locally in
+> the meantime:
 > ```bash
 > uv sync --extra docs
 > uv run sphinx-build -b html docs/source docs/build/html
@@ -44,9 +47,9 @@ the benchmark pipeline, DA3-Streaming, and FAQ all live there.
 
 ## 📰 News
 
-- **11-12-2025:** New models and [DA3-Streaming](https://depth-anything-3.readthedocs.io/en/latest/streaming.html) released -- ultra-long video inference under 12GB GPU memory via sliding-window streaming.
-- **08-12-2025:** [Benchmark evaluation pipeline](https://depth-anything-3.readthedocs.io/en/latest/benchmark.html) released.
-- **30-11-2025:** Added `use_ray_pose` and [`ref_view_strategy`](https://depth-anything-3.readthedocs.io/en/latest/ref_view_strategy.html).
+- **11-12-2025:** New models and [DA3-Streaming](https://bogarrichard.github.io/Depth-Anything-3/streaming.html) released -- ultra-long video inference under 12GB GPU memory via sliding-window streaming.
+- **08-12-2025:** [Benchmark evaluation pipeline](https://bogarrichard.github.io/Depth-Anything-3/benchmark.html) released.
+- **30-11-2025:** Added `use_ray_pose` and [`ref_view_strategy`](https://bogarrichard.github.io/Depth-Anything-3/ref_view_strategy.html).
 - **25-11-2025:** Added [Awesome DA3 Projects](#-awesome-da3-projects).
 - **14-11-2025:** Paper, project page, code and models released.
 
@@ -67,9 +70,9 @@ prediction = model.inference(["image1.png", "image2.png"])
 da3 auto path/to/input --export-dir ./output
 ```
 
-See the [installation guide](https://depth-anything-3.readthedocs.io/en/latest/installation.html)
+See the [installation guide](https://bogarrichard.github.io/Depth-Anything-3/installation.html)
 for extras (Gradio app, Gaussian Splatting, COLMAP export, streaming), and
-the [model cards](https://depth-anything-3.readthedocs.io/en/latest/model_cards.html)
+the [model cards](https://bogarrichard.github.io/Depth-Anything-3/model_cards.html)
 to pick a checkpoint.
 
 ## 🏢 Awesome DA3 Projects

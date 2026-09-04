@@ -4,7 +4,7 @@ Memory-efficient inference for long videos and large-scale scenes via chunk
 streaming, built on [VGGT-Long](https://github.com/DengKaiCQ/VGGT-Long).
 
 Full setup instructions, output format, and benchmark results:
-**[depth-anything-3.readthedocs.io/en/latest/streaming.html](https://depth-anything-3.readthedocs.io/en/latest/streaming.html)**
+**[bogarrichard.github.io/Depth-Anything-3/streaming.html](https://bogarrichard.github.io/Depth-Anything-3/streaming.html)**
 
 Quick start:
 
