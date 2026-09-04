@@ -70,5 +70,5 @@ See {doc}`streaming` for the full setup.
 
 ## Next step
 
-See {doc}`model_cards` to pick a model, then {doc}`usage/python_api` or
-{doc}`usage/cli` to run it.
+See {doc}`model_cards` to pick a model, then {doc}`reference/python_api` or
+{doc}`reference/cli` to run it.

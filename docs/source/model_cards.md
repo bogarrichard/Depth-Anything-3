@@ -67,7 +67,7 @@ prefer these refreshed checkpoints. The original `DA3NESTED-GIANT-LARGE`,
 - CPU or resource-constrained testing? `DA3-SMALL` (0.08B).
 
 Load any of them by Hugging Face repo ID or a local directory -- see
-{doc}`usage/python_api`.
+{doc}`reference/python_api`.
 
 ## Metric depth conversion
 

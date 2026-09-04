@@ -60,7 +60,7 @@ vs. camera decoder tradeoff.
 - **Multiple export formats** -- `glb`, `npz`, `ply`, 3DGS video, feature and
   depth visualizations, to connect with downstream tools.
 - **Extensible, modular design** -- config-driven model construction (see
-  {doc}`usage/python_api`) for research on new architectures.
+  {doc}`reference/python_api`) for research on new architectures.
 
 ## Where to go next
 
@@ -70,14 +70,6 @@ vs. camera decoder tradeoff.
 
 installation
 model_cards
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Usage
-
-usage/python_api
-usage/cli
 ```
 
 ```{toctree}
