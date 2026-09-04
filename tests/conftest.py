@@ -103,6 +103,21 @@ def tiny_api_model():
 
 
 @pytest.fixture(scope="session")
+def tiny_checkpoint_dir(tmp_path_factory, tiny_api_model):
+    """``tiny_api_model`` saved to a local directory via ``save_pretrained``.
+
+    The CLI always loads through ``DepthAnything3.from_pretrained(model_dir)``
+    (never the ``model_name=`` constructor), so CLI-level tests need a real
+    on-disk checkpoint -- this is the local-directory form of that, taking
+    the same round trip ``huggingface_hub.PyTorchModelHubMixin`` uses to load
+    from the Hub, minus the network call.
+    """
+    directory = tmp_path_factory.mktemp("tiny_checkpoint")
+    tiny_api_model.save_pretrained(str(directory))
+    return str(directory)
+
+
+@pytest.fixture(scope="session")
 def image_files(tmp_path_factory):
     """Three small on-disk RGB images with distinguishable content."""
     from PIL import Image
