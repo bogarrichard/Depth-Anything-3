@@ -22,7 +22,18 @@ import torch
 
 @dataclass
 class Gaussians:
-    """3DGS parameters, all in world space"""
+    """3D Gaussian Splatting parameters, all in world space.
+
+    Attributes:
+        means: World-space centers, shape ``(batch, gaussian, 3)``.
+        scales: Standard-deviation scales, shape ``(batch, gaussian, 3)``.
+        rotations: World-space orientation as scalar-first (WXYZ)
+            quaternions, shape ``(batch, gaussian, 4)``.
+        harmonics: Spherical-harmonic color coefficients, shape
+            ``(batch, gaussian, 3, d_sh)``.
+        opacities: Per-Gaussian opacity, shape ``(batch, gaussian)``, or its
+            own SH coefficients, shape ``(batch, gaussian, 1, d_sh)``.
+    """
 
     means: torch.Tensor  # world points, "batch gaussian dim"
     scales: torch.Tensor  # scales_std, "batch gaussian 3"
@@ -33,6 +44,27 @@ class Gaussians:
 
 @dataclass
 class Prediction:
+    """The result of :meth:`depth_anything_3.api.DepthAnything3.inference`.
+
+    Attributes:
+        depth: Estimated depth maps, shape ``(N, H, W)``.
+        is_metric: Whether ``depth`` is in real-world units (metric models)
+            rather than an arbitrary relative scale.
+        sky: Sky segmentation mask, shape ``(N, H, W)``, if the model
+            supports it.
+        conf: Per-pixel confidence, shape ``(N, H, W)``.
+        extrinsics: World-to-camera matrices, shape ``(N, 4, 4)``.
+        intrinsics: Camera intrinsic matrices, shape ``(N, 3, 3)``.
+        processed_images: The resized/normalized input images actually fed
+            to the model, shape ``(N, H, W, 3)`` -- useful for visualization
+            alongside ``depth``, since it matches its resolution.
+        gaussians: Predicted 3D Gaussians, if ``infer_gs=True`` was passed to
+            ``inference()``.
+        aux: Auxiliary outputs, e.g. ``feat_layer_<i>`` intermediate
+            features when ``export_feat_layers`` was set.
+        scale_factor: The metric scale factor applied, for metric models.
+    """
+
     depth: np.ndarray  # N, H, W
     is_metric: int
     sky: np.ndarray | None = None  # N, H, W

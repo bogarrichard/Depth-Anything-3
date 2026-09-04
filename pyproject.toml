@@ -44,6 +44,16 @@ dev = [
     # tomllib is stdlib from 3.11; tests/test_packaging.py needs the backport below that.
     'tomli>=2; python_version < "3.11"',
 ]
+# Building the Sphinx/Read the Docs site under docs/. Not a runtime extra --
+# excluded from `all` the same way `dev` is.
+docs = [
+    "sphinx>=7",
+    "myst-parser>=2",
+    "sphinx-rtd-theme>=2",
+    "sphinx-design>=0.5",
+    "sphinxcontrib-typer>=0.5",
+    "sphinx-autodoc-typehints>=2",
+]
 # open3d is used only under src/depth_anything_3/bench/ and has no wheels for
 # Python 3.13. Keeping it out of the core install lets the package itself run
 # on 3.13.

@@ -60,7 +60,8 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
     - Export capabilities for various formats (GLB, PLY, NPZ, etc.)
     - Camera pose estimation and metric depth scaling
 
-    Usage:
+    Usage::
+
         # Load from Hugging Face Hub
         model = DepthAnything3.from_pretrained("huggingface/model-name")
 

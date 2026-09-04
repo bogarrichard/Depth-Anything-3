@@ -109,11 +109,12 @@ def import_item(path: str, name: str) -> Any:
 def create_object(config: DictConfig) -> Any:
     """
     Create an object from config.
-    The config is expected to contains the following:
-    __object__:
-      path: path.to.module
-      name: MyClass
-      args: as_config | as_params (default to as_config)
+    The config is expected to contain the following::
+
+        __object__:
+          path: path.to.module
+          name: MyClass
+          args: as_config | as_params (default to as_config)
     """
     config = DictConfig(config)
     item = import_item(

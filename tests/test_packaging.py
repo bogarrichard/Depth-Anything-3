@@ -214,13 +214,13 @@ def test_expected_extras_exist(extra):
 
 
 def test_the_all_extra_bundles_every_optional_extra_except_the_documented_exclusions():
-    """``dev`` is not a user-facing extra."""
+    """``dev`` and ``docs`` are not user-facing extras."""
     referenced = set()
     for spec in EXTRAS["all"]:
         match = re.search(r"\[(.*)\]", spec)
         if match:
             referenced |= {name.strip() for name in match.group(1).split(",")}
-    assert referenced == set(EXTRAS) - {"all", "dev"}
+    assert referenced == set(EXTRAS) - {"all", "dev", "docs"}
 
 
 def test_the_all_extra_only_points_at_this_package():
