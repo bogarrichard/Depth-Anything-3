@@ -38,16 +38,6 @@ the benchmark pipeline, DA3-Streaming, and FAQ all live there. Published
 automatically from `docs/source` on every push to `dev`
 (`.github/workflows/docs.yml`).
 
-> Not live yet -- GitHub Pages needs to be enabled once in this repo's own
-> Settings before the workflow can publish. Build and view it locally in
-> the meantime:
-> ```bash
-> uv sync --extra docs
-> uv run sphinx-build -b html docs/source docs/build/html
-> uv run python -m http.server -d docs/build/html 8000
-> ```
-> Then open `http://localhost:8000`.
-
 ## 📰 News
 
 - **11-12-2025:** New models and [DA3-Streaming](https://bogarrichard.github.io/Depth-Anything-3/streaming.html) released -- ultra-long video inference under 12GB GPU memory via sliding-window streaming.
