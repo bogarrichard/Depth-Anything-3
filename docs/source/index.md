@@ -21,6 +21,27 @@ on public academic datasets.
 [GitHub](https://github.com/ByteDance-Seed/Depth-Anything-3)
 ```
 
+## Model Cards
+
+| Model Name | Params | Rel. Depth | Pose Est. | Pose Cond. | GS | Met. Depth | Sky Seg | License |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| **Nested** | | | | | | | | |
+| [DA3NESTED-GIANT-LARGE-1.1](https://huggingface.co/depth-anything/DA3NESTED-GIANT-LARGE-1.1) | 1.40B | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | CC BY-NC 4.0 |
+| **Any-view Model** | | | | | | | | |
+| [DA3-GIANT-1.1](https://huggingface.co/depth-anything/DA3-GIANT-1.1) | 1.15B | ✅ | ✅ | ✅ | ✅ | | | CC BY-NC 4.0 |
+| [DA3-LARGE-1.1](https://huggingface.co/depth-anything/DA3-LARGE-1.1) | 0.35B | ✅ | ✅ | ✅ | | | | CC BY-NC 4.0 |
+| [DA3-BASE](https://huggingface.co/depth-anything/DA3-BASE) | 0.12B | ✅ | ✅ | ✅ | | | | Apache 2.0 |
+| [DA3-SMALL](https://huggingface.co/depth-anything/DA3-SMALL) | 0.08B | ✅ | ✅ | ✅ | | | | Apache 2.0 |
+| **Monocular Metric Depth** | | | | | | | | |
+| [DA3METRIC-LARGE](https://huggingface.co/depth-anything/DA3METRIC-LARGE) | 0.35B | ✅ | | | | ✅ | ✅ | Apache 2.0 |
+| **Monocular Depth** | | | | | | | | |
+| [DA3MONO-LARGE](https://huggingface.co/depth-anything/DA3MONO-LARGE) | 0.35B | ✅ | | | | | ✅ | Apache 2.0 |
+
+`DA3-LARGE-1.1` is generally comparable to VGGT. See {doc}`model_cards` for
+the full table (including the deprecated pre-`1.1` checkpoints), a
+model-choosing guide, the metric-depth conversion formula, and the ray head
+vs. camera decoder tradeoff.
+
 ## Codebase highlights
 
 - **Interactive web UI & gallery** -- visualize outputs with a Gradio-based
