@@ -22,7 +22,7 @@ import torch
 
 @dataclass
 class Gaussians:
-    """3D Gaussian Splatting parameters, all in world space.
+    """A dataclass holding 3D Gaussian Splatting parameters, all in world space.
 
     Attributes:
         means: World-space centers, shape ``(batch, gaussian, 3)``.
@@ -44,7 +44,8 @@ class Gaussians:
 
 @dataclass
 class Prediction:
-    """The result of :meth:`depth_anything_3.api.DepthAnything3.inference`.
+    """A dataclass holding the result of
+    :meth:`depth_anything_3.api.DepthAnything3.inference`.
 
     Attributes:
         depth: Estimated depth maps, shape ``(N, H, W)``.

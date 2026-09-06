@@ -67,3 +67,9 @@ intersphinx_mapping = {
 # --- HTML ----------------------------------------------------------------
 html_theme = "furo"
 html_title = "Depth Anything 3"
+# The project name repeated as a sidebar heading on every single page adds
+# nothing a single-project docs site doesn't already establish via the
+# browser tab and every page's own title -- hide it instead of restating it.
+html_theme_options = {
+    "sidebar_hide_name": True,
+}

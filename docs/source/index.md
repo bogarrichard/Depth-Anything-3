@@ -69,7 +69,7 @@ vs. camera decoder tradeoff.
 :caption: Getting started
 
 installation
-model_cards
+quickstart
 ```
 
 ```{toctree}
@@ -77,6 +77,8 @@ model_cards
 :caption: API reference
 
 reference/python_api
+reference/export_formats
+reference/config_system
 reference/cli
 ```
 
@@ -84,6 +86,9 @@ reference/cli
 :maxdepth: 2
 :caption: Guides
 
+model_cards
+python_api_examples
+cli_examples
 ref_view_strategy
 benchmark
 streaming
