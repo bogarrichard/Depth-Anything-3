@@ -11,7 +11,7 @@ control it?**
 See {doc}`ref_view_strategy`.
 
 **Where's the full list of CLI flags / Python parameters?**
-{doc}`reference/cli` and {doc}`reference/python_api` -- both generated
+{doc}`reference/cli` and {doc}`reference/high_level_api` -- both generated
 directly from the code, so they can't go stale.
 
 **I found a bug, or want to contribute.**

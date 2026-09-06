@@ -60,7 +60,7 @@ vs. camera decoder tradeoff.
 - **Multiple export formats** -- `glb`, `npz`, `ply`, 3DGS video, feature and
   depth visualizations, to connect with downstream tools.
 - **Extensible, modular design** -- config-driven model construction (see
-  {doc}`reference/python_api`) for research on new architectures.
+  {doc}`reference/high_level_api`) for research on new architectures.
 
 ## Where to go next
 
@@ -74,10 +74,21 @@ quickstart
 
 ```{toctree}
 :maxdepth: 2
+:caption: Guides
+
+python_examples
+streaming
+ref_view_strategy
+model_cards
+benchmark
+```
+
+```{toctree}
+:maxdepth: 2
 :caption: Python API reference
 
-reference/python_api
-reference/export_formats
+reference/high_level_api
+reference/export
 reference/config_system
 ```
 
@@ -87,17 +98,6 @@ reference/config_system
 
 reference/cli
 cli_examples
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Guides
-
-model_cards
-python_api_examples
-ref_view_strategy
-benchmark
-streaming
 ```
 
 ```{toctree}

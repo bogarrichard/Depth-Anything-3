@@ -15,7 +15,7 @@ print(prediction.extrinsics.shape)  # (N, 3, 4)  float32, opencv world-to-camera
 ```
 
 `prediction` is a {class}`~depth_anything_3.specs.Prediction` dataclass;
-{doc}`reference/python_api` documents every field.
+{doc}`reference/high_level_api` documents every field.
 
 ## Command line
 
@@ -39,7 +39,7 @@ requested `--export-format` produces.
 ## Next steps
 
 - {doc}`model_cards` -- pick a checkpoint for your accuracy/speed budget.
-- {doc}`python_api_examples` -- pose-conditioned inference, exports,
+- {doc}`python_examples` -- pose-conditioned inference, exports,
   Gaussian Splatting, feature extraction.
 - {doc}`cli_examples` -- batch processing, the resident backend, the
   Gradio UI and gallery.

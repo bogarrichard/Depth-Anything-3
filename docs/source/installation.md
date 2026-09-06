@@ -85,5 +85,5 @@ See {doc}`streaming` for the full setup.
 
 ## Next step
 
-See {doc}`model_cards` to pick a model, then {doc}`reference/python_api` or
+See {doc}`model_cards` to pick a model, then {doc}`reference/high_level_api` or
 {doc}`reference/cli` to run it.

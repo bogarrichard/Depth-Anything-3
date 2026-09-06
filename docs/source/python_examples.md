@@ -1,7 +1,7 @@
-# Python API Examples
+# Python Examples
 
 Runnable, task-oriented examples for `depth_anything_3.api.DepthAnything3`.
-See {doc}`reference/python_api` for the full parameter and return-type reference.
+See {doc}`reference/high_level_api` for the full parameter and return-type reference.
 
 ## Basic depth estimation
 
@@ -50,7 +50,7 @@ prediction = model.inference(
 )
 ```
 
-See {doc}`reference/export_formats` for every export format's own parameters (passed
+See {doc}`reference/export` for every export format's own parameters (passed
 via `export_kwargs`).
 
 ## Feature extraction

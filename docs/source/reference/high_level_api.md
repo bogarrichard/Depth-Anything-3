@@ -1,8 +1,8 @@
-# Python API
+# High Level Interface
 
 Generated from the source docstrings -- always in sync with the installed
-version. See {doc}`export_formats` and {doc}`config_system` for the export
-and config-system reference, and {doc}`../python_api_examples` for runnable,
+version. See {doc}`export` and {doc}`config_system` for the export
+and config-system reference, and {doc}`../python_examples` for runnable,
 task-oriented examples.
 
 ```{eval-rst}

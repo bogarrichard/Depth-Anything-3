@@ -1,11 +1,11 @@
-# Export Formats
+# Export Options
 
 Every export format is one function below, selected by name in
 `export_format` (combine several with `-`, e.g. `"mini_npz-glb"`) and
 dispatched by `export()`. Format-specific parameters (`export_kwargs`) are
 that function's own keyword arguments. `export_format` is used the same way
-from both {doc}`python_api` and {doc}`cli` -- see
-{doc}`../python_api_examples` for it in context.
+from both {doc}`high_level_api` and {doc}`cli` -- see
+{doc}`../python_examples` for it in context.
 
 ```{eval-rst}
 .. autofunction:: depth_anything_3.utils.export.export
