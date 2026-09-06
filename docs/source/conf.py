@@ -35,13 +35,24 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 autodoc_mock_imports = ["pycolmap"]
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
+# "all" (the default) documents every constructor parameter's type on a
+# class, even ones with no docstring entry -- for a plain function that's
+# harmless, but for a class it *always* synthesizes its own bare Parameters
+# field list from the constructor's annotations, regardless of whether the
+# class already documents its fields another way. Prediction/Gaussians do:
+# Napoleon turns their "Attributes:" section into one described `.. attribute::`
+# block per field, so the synthesized list duplicated that as a second,
+# description-less "name (type)" list further up the same page. "documented"
+# instead only ever adds a type next to a parameter that already has a
+# docstring description, so it enriches Napoleon's existing entries instead
+# of fabricating a competing one.
+autodoc_typehints_description_target = "documented"
 # Without this, autoclass only renders the class docstring, not __init__'s --
 # DepthAnything3's constructor Args: (model_name's description) would be
 # silently dropped, leaving a bare, description-less "model_name (str)"
 # rendered in a different style (plain emphasis, no sphinx-autodoc-typehints
 # code styling) than every other parameter on the page, which have Args: text
-# to attach the type to. Dataclasses (Prediction, Gaussians) are unaffected:
-# their generated __init__ has no docstring to merge in.
+# to attach the type to.
 autoclass_content = "both"
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
