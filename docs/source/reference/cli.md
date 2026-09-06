@@ -9,6 +9,7 @@ Task-oriented example commands follow in {ref}`examples-cli` below.
    :prog: da3
    :show-nested:
    :width: 100
+   :preferred: text
 ```
 
 (examples-cli)=

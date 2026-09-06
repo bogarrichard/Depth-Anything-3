@@ -79,9 +79,9 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         Initialize DepthAnything3 with specified preset.
 
         Args:
-        model_name: The name of the model preset to use.
-                    Examples: 'da3-giant', 'da3-large', 'da3metric-large', 'da3nested-giant-large'.
-        **kwargs: Additional keyword arguments (currently unused).
+            model_name: The name of the model preset to use.
+                Examples: 'da3-giant', 'da3-large', 'da3metric-large', 'da3nested-giant-large'.
+            **kwargs: Additional keyword arguments (currently unused).
         """
         super().__init__()
         self.model_name = model_name

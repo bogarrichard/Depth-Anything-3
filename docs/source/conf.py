@@ -35,6 +35,14 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 autodoc_mock_imports = ["pycolmap"]
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
+# Without this, autoclass only renders the class docstring, not __init__'s --
+# DepthAnything3's constructor Args: (model_name's description) would be
+# silently dropped, leaving a bare, description-less "model_name (str)"
+# rendered in a different style (plain emphasis, no sphinx-autodoc-typehints
+# code styling) than every other parameter on the page, which have Args: text
+# to attach the type to. Dataclasses (Prediction, Gaussians) are unaffected:
+# their generated __init__ has no docstring to merge in.
+autoclass_content = "both"
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False
@@ -52,3 +60,5 @@ html_theme_options = {
     "navigation_depth": 4,
 }
 html_title = "Depth Anything 3"
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]

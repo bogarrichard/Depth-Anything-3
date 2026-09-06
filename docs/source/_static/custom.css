@@ -1,0 +1,22 @@
+/* sphinx-autodoc-typehints renders every parameter/return type (str, Tensor,
+ * Optional[...], ...) as a link wrapped in `<code class="xref ...">` -- the
+ * same markup {class}/{func}/{meth} roles produce elsewhere in prose. But
+ * sphinx_rtd_theme's own stylesheet gives the `code.xref` rule higher
+ * specificity than its `a code` rule, so it silently overrides the theme's
+ * intended link-blue with bold, near-black text (color: #404040; font-weight:
+ * 700) for exactly the elements that are supposed to read as clickable links.
+ * The effect: every type name in the API reference looks like heavy, shouted
+ * emphasis instead of a normal hyperlink -- most visible in the Parameters
+ * lists, where it stands out from the plain-weight prose around it.
+ *
+ * This restores the theme's own already-defined link styling (same blue as
+ * every other in-page link, e.g. `a .rst-content code`) rather than
+ * introducing a new color -- an industry-standard, low-key monospace link,
+ * matching how type cross-references render in most other Sphinx docs
+ * (NumPy, SciPy, Click).
+ */
+.rst-content code.xref,
+.rst-content tt.xref {
+    font-weight: normal;
+    color: #2980b9;
+}
