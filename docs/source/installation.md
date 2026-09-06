@@ -15,6 +15,8 @@ git clone https://github.com/bogarrichard/Depth-Anything-3.git
 cd Depth-Anything-3
 ```
 
+## Basic install
+
 `````{tab-set}
 
 ````{tab-item} uv
@@ -22,13 +24,7 @@ cd Depth-Anything-3
 get the exact resolved versions this project is tested against:
 
 ```bash
-uv sync                    # Basic
-uv sync --extra app        # + Gradio app
-uv sync --extra gs         # + gaussian head (gsplat)
-uv sync --extra streaming  # + da3_streaming pipeline
-uv sync --extra colmap     # + COLMAP export (--export-format colmap)
-uv sync --extra bench      # + benchmark evaluation pipeline
-uv sync --all-extras       # ALL
+uv sync
 ```
 
 `[tool.uv] torch-backend = "auto"` picks the right torch wheel for the
@@ -37,21 +33,40 @@ machine it runs on, so no CUDA variant is baked into the lockfile.
 
 ````{tab-item} pip
 ```bash
-pip install -e .              # Basic
-pip install -e ".[app]"       # Gradio app
-pip install -e ".[gs]"        # gaussian head (gsplat)
-pip install -e ".[streaming]" # da3_streaming pipeline
-pip install -e ".[colmap]"    # COLMAP export (--export-format colmap)
-pip install -e ".[bench]"     # benchmark evaluation pipeline
-pip install -e ".[all]"       # ALL
+pip install -e .
 ```
 ````
 
 `````
 
-## Extras at a glance
+## Installing with extras
 
-| Extra | Adds | Needed for |
+Substitute any extra from the table below for `<extra>`; repeat the flag
+(uv) or comma-separate (pip) to combine several.
+
+`````{tab-set}
+
+````{tab-item} uv
+```bash
+uv sync --extra <extra>          # one extra
+uv sync --extra app --extra gs   # several
+uv sync --extra all              # every user-facing extra
+uv sync --all-extras             # ...plus dev and docs
+```
+````
+
+````{tab-item} pip
+```bash
+pip install -e ".[<extra>]"      # one extra
+pip install -e ".[app,gs]"       # several
+pip install -e ".[all]"          # every user-facing extra
+pip install -e ".[all,dev,docs]" # ...plus dev and docs
+```
+````
+
+`````
+
+| `<extra>` | Adds | Needed for |
 |---|---|---|
 | `app` | `gradio`, `pillow-heif` | `da3 gradio` web UI |
 | `gs` | `gsplat`, `e3nn` | 3D Gaussian Splatting inference/export |
