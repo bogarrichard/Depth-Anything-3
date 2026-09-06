@@ -1,6 +1,11 @@
 # Configuration file for the Sphinx documentation builder.
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent / "_ext"))
+
 project = "Depth Anything 3"
 copyright = "2025 ByteDance Ltd. and/or its affiliates"
 author = "Depth Anything 3 contributors"
@@ -12,8 +17,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx_design",
-    "sphinxcontrib.typer",
     "sphinx_autodoc_typehints",
+    "typer_reference",
 ]
 
 myst_enable_extensions = [
@@ -67,9 +72,6 @@ intersphinx_mapping = {
 # --- HTML ----------------------------------------------------------------
 html_theme = "furo"
 html_title = "Depth Anything 3"
-# The project name repeated as a sidebar heading on every single page adds
-# nothing a single-project docs site doesn't already establish via the
-# browser tab and every page's own title -- hide it instead of restating it.
-html_theme_options = {
-    "sidebar_hide_name": True,
-}
+# Furo's sidebar brand is also the only visible "back to the landing page"
+# link, and with no html_logo, sidebar_hide_name leaves it an empty box --
+# so the name stays.

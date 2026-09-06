@@ -7,10 +7,6 @@ name actually does, and {doc}`../cli_examples` for task-oriented example
 commands.
 
 ```{eval-rst}
-.. typer:: depth_anything_3.cli:app
+.. typer-reference:: depth_anything_3.cli:app
    :prog: da3
-   :show-nested:
-   :make-sections:
-   :width: 100
-   :preferred: text
 ```

@@ -74,12 +74,19 @@ quickstart
 
 ```{toctree}
 :maxdepth: 2
-:caption: API reference
+:caption: Python API reference
 
 reference/python_api
 reference/export_formats
 reference/config_system
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Command line
+
 reference/cli
+cli_examples
 ```
 
 ```{toctree}
@@ -88,7 +95,6 @@ reference/cli
 
 model_cards
 python_api_examples
-cli_examples
 ref_view_strategy
 benchmark
 streaming

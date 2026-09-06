@@ -51,8 +51,10 @@ docs = [
     "myst-parser>=2",
     "furo>=2024.8",
     "sphinx-design>=0.5",
-    "sphinxcontrib-typer>=0.5",
     "sphinx-autodoc-typehints>=2",
+    # docs/source/_ext/typer_reference.py imports it directly, rather than
+    # relying on it arriving as a transitive dependency of sphinx.
+    "docutils",
 ]
 # open3d is used only under src/depth_anything_3/bench/ and has no wheels for
 # Python 3.13. Keeping it out of the core install lets the package itself run

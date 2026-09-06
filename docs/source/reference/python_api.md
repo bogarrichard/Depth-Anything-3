@@ -12,6 +12,10 @@ task-oriented examples.
    :show-inheritance:
 
 .. autoclass:: depth_anything_3.specs.Prediction
+   :members:
+   :undoc-members:
 
 .. autoclass:: depth_anything_3.specs.Gaussians
+   :members:
+   :undoc-members:
 ```
