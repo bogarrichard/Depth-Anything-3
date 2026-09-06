@@ -65,11 +65,5 @@ intersphinx_mapping = {
 }
 
 # --- HTML ----------------------------------------------------------------
-html_theme = "sphinx_rtd_theme"
-html_theme_options = {
-    "collapse_navigation": False,
-    "navigation_depth": 4,
-}
+html_theme = "furo"
 html_title = "Depth Anything 3"
-html_static_path = ["_static"]
-html_css_files = ["custom.css"]
