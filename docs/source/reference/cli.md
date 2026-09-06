@@ -19,9 +19,12 @@ Task-oriented example commands follow in {ref}`examples-cli` below.
 The CLI supports image, image-directory, video, and COLMAP-dataset
 processing, plus a Gradio web UI and gallery viewer. A backend service can
 keep the model resident in GPU memory across jobs, so it doesn't reload for
-every command.
+every command. Common workflows come first below; per-command walkthroughs
+follow for the details of each one.
 
-### Quick start
+### Common workflows
+
+#### Quick start
 
 ```bash
 # Start backend service (optional, keeps model resident in GPU memory)
@@ -48,7 +51,41 @@ When a job is submitted to a running `da3 backend` over HTTP,
 local (non-backend) runs, where `--export-dir` can be anywhere writable.
 ```
 
-### `auto` — detect and dispatch
+#### Batch processing with a shared backend
+
+```bash
+da3 backend --model-dir depth-anything/DA3NESTED-GIANT-LARGE-1.1 \
+    --host 0.0.0.0 --port 8008 --gallery-dir ./workspace
+
+for scene in scene1 scene2 scene3; do
+    da3 auto ./data/$scene --export-dir ./workspace/$scene --use-backend --auto-cleanup
+done
+
+da3 gallery --gallery-dir ./workspace --open-browser
+```
+
+#### Multiple export formats plus custom resolution
+
+```bash
+da3 image image.jpg \
+    --process-res 1024 \
+    --num-max-points 2000000 \
+    --conf-thresh-percentile 30.0 \
+    --export-format mini_npz-glb \
+    --export-dir ./output
+```
+
+#### Getting help
+
+```bash
+da3 --help
+da3 auto --help
+da3 image --help
+```
+
+### Command walkthroughs
+
+#### `auto` — detect and dispatch
 
 `da3 auto INPUT_PATH [OPTIONS]` inspects `INPUT_PATH` and routes to the
 matching handler:
@@ -66,7 +103,7 @@ da3 auto path/to/video.mp4 --fps 2.0 --export-dir ./output
 da3 auto path/to/input --export-format mini_npz-glb --use-backend --export-dir ./output
 ```
 
-### `image` / `images` / `video` / `colmap`
+#### `image` / `images` / `video` / `colmap`
 
 Process one image, a directory of images, a video (frames are extracted
 first), or a COLMAP reconstruction directly:
@@ -86,7 +123,7 @@ da3 image image.jpg --export-format feat_vis --export-feat "9,19,29,39" --export
 da3 auto video.mp4 --export-format glb-feat_vis --export-feat "11,21,31" --export-dir ./debug --use-backend
 ```
 
-### `backend` — keep the model resident
+#### `backend` — keep the model resident
 
 ```bash
 da3 backend --model-dir depth-anything/DA3NESTED-GIANT-LARGE-1.1
@@ -117,7 +154,7 @@ da3 backend --host 0.0.0.0 --model-dir depth-anything/DA3NESTED-GIANT-LARGE-1.1
 environment automatically. Pass `--allow-unauthenticated` to skip
 authentication on a network you already trust.
 
-### `gradio` and `gallery`
+#### `gradio` and `gallery`
 
 ```bash
 da3 gradio --model-dir depth-anything/DA3NESTED-GIANT-LARGE-1.1 \
@@ -128,37 +165,3 @@ da3 gallery --gallery-dir ./workspace --open-browser
 
 The gallery expects each scene folder to contain at least `scene.glb` and
 `scene.jpg`, with optional subfolders like `depth_vis/` or `gs_video/`.
-
-### Workflow examples
-
-**Batch processing with a shared backend:**
-
-```bash
-da3 backend --model-dir depth-anything/DA3NESTED-GIANT-LARGE-1.1 \
-    --host 0.0.0.0 --port 8008 --gallery-dir ./workspace
-
-for scene in scene1 scene2 scene3; do
-    da3 auto ./data/$scene --export-dir ./workspace/$scene --use-backend --auto-cleanup
-done
-
-da3 gallery --gallery-dir ./workspace --open-browser
-```
-
-**Multiple export formats plus custom resolution:**
-
-```bash
-da3 image image.jpg \
-    --process-res 1024 \
-    --num-max-points 2000000 \
-    --conf-thresh-percentile 30.0 \
-    --export-format mini_npz-glb \
-    --export-dir ./output
-```
-
-### Getting help
-
-```bash
-da3 --help
-da3 auto --help
-da3 image --help
-```
