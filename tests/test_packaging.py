@@ -36,6 +36,7 @@ IMPORT_NAME = {
     "faiss-gpu": "faiss",
     "scikit-learn": "sklearn",
     "pyyaml": "yaml",
+    "rerun-sdk": "rerun",
     "pytest": "pytest",
     "hypothesis": "hypothesis",
 }
