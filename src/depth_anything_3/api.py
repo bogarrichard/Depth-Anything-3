@@ -140,7 +140,7 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
 
     def inference(
         self,
-        image: list[np.ndarray | Image.Image | str],
+        image: list[np.ndarray | Image.Image | str | torch.Tensor] | torch.Tensor,
         extrinsics: np.ndarray | None = None,
         intrinsics: np.ndarray | None = None,
         align_to_input_ext_scale: bool = True,
@@ -168,7 +168,11 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         Run inference on input images.
 
         Args:
-            image: List of input images (numpy arrays, PIL Images, or file paths)
+            image: Input images: a list of numpy arrays, PIL Images or file paths, or torch
+                uint8 RGB images: one (N, H, W, 3) / (N, 3, H, W) tensor or a list of
+                (H, W, 3) / (3, H, W) tensors. Tensors may live on any device (e.g. the GPU)
+                and are then preprocessed there with torch ops (close to, not bit-identical
+                with, the NumPy/PIL path). A list must not mix tensors with other types.
             extrinsics: Camera extrinsics (N, 4, 4)
             intrinsics: Camera intrinsics (N, 3, 3)
             align_to_input_ext_scale: whether to align the input pose scale to the prediction
@@ -201,12 +205,12 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
             assert isinstance(image[0], str), "`image` must be image paths for COLMAP export."
 
         # Preprocess images
-        imgs_cpu, extrinsics, intrinsics = self._preprocess_inputs(
+        imgs_pre, extrinsics, intrinsics = self._preprocess_inputs(
             image, extrinsics, intrinsics, process_res, process_res_method
         )
 
         # Prepare tensors for model
-        imgs, ex_t, in_t = self._prepare_model_inputs(imgs_cpu, extrinsics, intrinsics)
+        imgs, ex_t, in_t = self._prepare_model_inputs(imgs_pre, extrinsics, intrinsics)
 
         # Normalize extrinsics
         ex_t_norm = self._normalize_extrinsics(ex_t.clone() if ex_t is not None else None)
@@ -227,7 +231,7 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         )
 
         # Add processed images for visualization
-        prediction = self._add_processed_images(prediction, imgs_cpu)
+        prediction = self._add_processed_images(prediction, imgs_pre)
 
         # Export if requested
         if export_dir is not None:
@@ -281,15 +285,15 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
 
     def _preprocess_inputs(
         self,
-        image: list[np.ndarray | Image.Image | str],
+        image: list[np.ndarray | Image.Image | str | torch.Tensor] | torch.Tensor,
         extrinsics: np.ndarray | None = None,
         intrinsics: np.ndarray | None = None,
         process_res: int = 504,
         process_res_method: str = "upper_bound_resize",
     ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
-        """Preprocess input images using input processor."""
+        """Preprocess input images using input processor. Tensor inputs stay on their device."""
         start_time = time.time()
-        imgs_cpu, extrinsics, intrinsics = self.input_processor(
+        imgs_pre, extrinsics, intrinsics = self.input_processor(
             image,
             extrinsics.copy() if extrinsics is not None else None,
             intrinsics.copy() if intrinsics is not None else None,
@@ -301,13 +305,13 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
             "Processed Images Done taking",
             end_time - start_time,
             "seconds. Shape: ",
-            imgs_cpu.shape,
+            imgs_pre.shape,
         )
-        return imgs_cpu, extrinsics, intrinsics
+        return imgs_pre, extrinsics, intrinsics
 
     def _prepare_model_inputs(
         self,
-        imgs_cpu: torch.Tensor,
+        imgs_pre: torch.Tensor,
         extrinsics: torch.Tensor | None,
         intrinsics: torch.Tensor | None,
     ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
@@ -315,7 +319,7 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         device = self._get_model_device()
 
         # Move images to model device
-        imgs = imgs_cpu.to(device, non_blocking=True)[None].float()
+        imgs = imgs_pre.to(device, non_blocking=True)[None].float()
 
         # Convert camera parameters to tensors
         ex_t = (
@@ -405,10 +409,10 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         logger.info(f"Conversion to Prediction Done. Time: {end_time - start_time} seconds")
         return output
 
-    def _add_processed_images(self, prediction: Prediction, imgs_cpu: torch.Tensor) -> Prediction:
+    def _add_processed_images(self, prediction: Prediction, imgs_pre: torch.Tensor) -> Prediction:
         """Add processed images to prediction for visualization."""
         # Convert from (N, 3, H, W) to (N, H, W, 3) and denormalize
-        processed_imgs = imgs_cpu.permute(0, 2, 3, 1).cpu().numpy()  # (N, H, W, 3)
+        processed_imgs = imgs_pre.permute(0, 2, 3, 1).cpu().numpy()  # (N, H, W, 3)
 
         # Denormalize from ImageNet normalization
         mean = np.array([0.485, 0.456, 0.406])

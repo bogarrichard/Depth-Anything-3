@@ -21,6 +21,7 @@ In addition, it parallelizes per-image preprocessing using the provided `paralle
 
 from __future__ import annotations
 
+import functools
 from collections.abc import Sequence
 import cv2
 import numpy as np
@@ -30,6 +31,17 @@ from PIL import Image
 
 from depth_anything_3.utils.logger import logger
 from depth_anything_3.utils.parallel_utils import parallel_execution
+
+
+@functools.lru_cache(maxsize=64)
+def _area_weights_cached(n_in: int, n_out: int, device: torch.device, dtype: torch.dtype):
+    """``(n_out, n_in)`` area-overlap weights, cached: shapes repeat across images."""
+    scale = n_in / n_out
+    lo = torch.arange(n_out, device=device, dtype=torch.float64)[:, None] * scale
+    hi = lo + scale
+    cell = torch.arange(n_in, device=device, dtype=torch.float64)[None, :]
+    overlap = (torch.minimum(hi, cell + 1) - torch.maximum(lo, cell)).clamp_(min=0)
+    return (overlap / scale).to(dtype)
 
 
 class InputProcessor:
@@ -64,7 +76,7 @@ class InputProcessor:
     # -----------------------------
     def __call__(
         self,
-        image: list[np.ndarray | Image.Image | str],
+        image: list[np.ndarray | Image.Image | str | torch.Tensor] | torch.Tensor,
         extrinsics: np.ndarray | None = None,
         intrinsics: np.ndarray | None = None,
         process_res: int = 504,
@@ -76,10 +88,29 @@ class InputProcessor:
         desc: str | None = "Preprocess",
     ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
         """
+        ``image`` is a list of numpy arrays / PIL images / paths (CPU path), or torch
+        uint8 RGB images: one ``(N, H, W, 3)`` / ``(N, 3, H, W)`` tensor or a list of
+        ``(H, W, 3)`` / ``(3, H, W)`` tensors. Tensor inputs are processed on their own
+        device with torch ops and the result stays on that device. A list must not mix
+        tensors with other kinds.
+
         Returns:
             (tensor, extrinsics_list, intrinsics_list)
-            tensor shape: (1, N, 3, H, W)
+            tensor shape: (N, 3, H, W)
         """
+        tensors = self._as_tensor_list(image)
+        if tensors is not None:
+            exts_list, ixts_list = self._validate_and_pack_meta(tensors, extrinsics, intrinsics)
+            results = [
+                self._process_one_tensor(img, e, k, process_res, process_res_method)
+                for img, e, k in zip(
+                    tensors,
+                    exts_list or [None] * len(tensors),
+                    ixts_list or [None] * len(tensors),
+                )
+            ]
+            return self._finish(results)
+
         sequential = self._resolve_sequential(sequential, num_workers)
         exts_list, ixts_list = self._validate_and_pack_meta(image, extrinsics, intrinsics)
 
@@ -95,6 +126,9 @@ class InputProcessor:
             desc=desc,
         )
 
+        return self._finish(results)
+
+    def _finish(self, results):
         proc_imgs, out_sizes, out_ixts, out_exts = self._unpack_results(results)
         proc_imgs, out_sizes, out_ixts = self._unify_batch_shapes(proc_imgs, out_sizes, out_ixts)
 
@@ -255,6 +289,137 @@ class InputProcessor:
 
         # Return: (img_tensor, (H, W), intrinsic, extrinsic)
         return img_tensor, (H, W), intrinsic, extrinsic
+
+    # -----------------------------
+    # Torch tensor input (stays on the tensor's device)
+    # -----------------------------
+    @staticmethod
+    def _as_tensor_list(image) -> list[torch.Tensor] | None:
+        """Split tensor input into per-image ``(3, H, W)`` uint8 tensors.
+
+        Returns None when ``image`` holds no tensors (the NumPy/PIL/path path).
+        Raises ValueError for mixed lists, non-uint8 tensors or an ambiguous layout.
+        """
+        if isinstance(image, torch.Tensor):
+            if image.ndim == 3:
+                items = [image]
+            elif image.ndim == 4 and image.shape[0] > 0:
+                items = list(image.unbind(0))
+            else:
+                raise ValueError(
+                    "Tensor images must be (N,H,W,3), (N,3,H,W), (H,W,3) or (3,H,W); "
+                    f"got shape {tuple(image.shape)}"
+                )
+        else:
+            flags = [isinstance(x, torch.Tensor) for x in image]
+            if not any(flags):
+                return None
+            if not all(flags):
+                raise ValueError("Cannot mix torch tensors with other image types in one list.")
+            items = list(image)
+
+        out = []
+        for t in items:
+            if t.dtype != torch.uint8:
+                raise ValueError(f"Tensor images must be uint8 (0-255); got {t.dtype}.")
+            if t.ndim != 3:
+                raise ValueError(f"Each tensor image must be 3-D; got shape {tuple(t.shape)}.")
+            first, last = t.shape[0] == 3, t.shape[-1] == 3
+            if first and last:
+                raise ValueError(
+                    f"Ambiguous tensor layout {tuple(t.shape)} (3 on both ends); "
+                    "pass an image with a spatial size other than 3."
+                )
+            if last:
+                t = t.permute(2, 0, 1)
+            elif not first:
+                raise ValueError(f"Tensor image needs 3 channels; got shape {tuple(t.shape)}.")
+            out.append(t)
+        devices = {t.device for t in out}
+        if len(devices) > 1:
+            raise ValueError(
+                f"All tensor images must be on one device; got {sorted(map(str, devices))}."
+            )
+        return out
+
+    @staticmethod
+    def _area_weights(n_in: int, n_out: int, device, dtype=torch.float32) -> torch.Tensor:
+        """``(n_out, n_in)`` matrix of exact area-overlap weights (cv2 INTER_AREA)."""
+        return _area_weights_cached(n_in, n_out, torch.device(device), dtype)
+
+    @classmethod
+    def _resize_tensor(
+        cls, x: torch.Tensor, new_w: int, new_h: int, upscale: bool
+    ) -> torch.Tensor:
+        """Resize a ``(3, H, W)`` uint8 tensor, returning uint8.
+
+        Mirrors ``cv2.resize``: bicubic when upscaling (INTER_CUBIC, same a=-0.75 kernel)
+        and exact area averaging when downscaling (INTER_AREA, as two matrix products with
+        fractional-overlap weights). The result is rounded and clamped to uint8 like cv2's.
+
+        The matmuls run in float32. A caller who enables TF32 globally
+        (``torch.set_float32_matmul_precision("high")``) on a GPU loosens the
+        one-level match with cv2 for downscaling; this method does not change global state.
+        """
+        f = x.float()
+        _, h, w = f.shape
+        if upscale:
+            f = torch.nn.functional.interpolate(
+                f[None], size=(new_h, new_w), mode="bicubic", align_corners=False
+            )[0]
+        else:
+            wy = cls._area_weights(h, new_h, f.device)
+            wx = cls._area_weights(w, new_w, f.device)
+            f = torch.matmul(torch.matmul(wy, f), wx.T)
+        return f.round_().clamp_(0, 255).to(torch.uint8)
+
+    def _process_one_tensor(
+        self,
+        img: torch.Tensor,
+        extrinsic: np.ndarray | None,
+        intrinsic: np.ndarray | None,
+        process_res: int,
+        process_res_method: str,
+    ) -> tuple[torch.Tensor, tuple[int, int], np.ndarray | None, np.ndarray | None]:
+        """Tensor twin of ``_process_one``: same sizes, same intrinsics, same device."""
+        _, orig_h, orig_w = img.shape
+        if process_res_method in ("upper_bound_resize", "upper_bound_crop"):
+            side = max(orig_w, orig_h)
+        elif process_res_method in ("lower_bound_resize", "lower_bound_crop"):
+            side = min(orig_w, orig_h)
+        else:
+            raise ValueError(f"Unsupported resize method: {process_res_method}")
+        w, h = orig_w, orig_h
+        if side != process_res:
+            scale = process_res / float(side)
+            w = max(1, int(round(orig_w * scale)))
+            h = max(1, int(round(orig_h * scale)))
+            img = self._resize_tensor(img, w, h, scale > 1.0)
+        intrinsic = self._resize_ixt(intrinsic, orig_w, orig_h, w, h)
+
+        patch = self.PATCH_SIZE
+        if process_res_method.endswith("resize"):
+
+            def nearest_multiple(x: int) -> int:
+                down = (x // patch) * patch
+                up = down + patch
+                return up if abs(up - x) <= abs(x - down) else down
+
+            new_w, new_h = max(1, nearest_multiple(w)), max(1, nearest_multiple(h))
+            if (new_w, new_h) != (w, h):
+                img = self._resize_tensor(img, new_w, new_h, new_w > w or new_h > h)
+            intrinsic = self._resize_ixt(intrinsic, w, h, new_w, new_h)
+        else:
+            new_w, new_h = (w // patch) * patch, (h // patch) * patch
+            if (new_w, new_h) != (w, h):
+                left, top = (w - new_w) // 2, (h - new_h) // 2
+                img = img[:, top : top + new_h, left : left + new_w]
+            intrinsic = self._crop_ixt(intrinsic, w, h, new_w, new_h)
+
+        mean = torch.tensor(self.NORMALIZE.mean, dtype=torch.float32, device=img.device)
+        std = torch.tensor(self.NORMALIZE.std, dtype=torch.float32, device=img.device)
+        out = (img.float() / 255.0 - mean.view(3, 1, 1)) / std.view(3, 1, 1)
+        return out.contiguous(), (new_h, new_w), intrinsic, extrinsic
 
     # -----------------------------
     # Intrinsics transforms

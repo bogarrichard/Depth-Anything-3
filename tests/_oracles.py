@@ -135,3 +135,53 @@ def unproject_oracle(pixels: np.ndarray, depth: np.ndarray, k: np.ndarray) -> np
     hom = np.concatenate([pixels, np.ones_like(pixels[..., :1])], axis=-1)
     rays = np.einsum("ij,...j->...i", np.linalg.inv(np.asarray(k, dtype=np.float64)), hom)
     return rays * np.asarray(depth, dtype=np.float64)[..., None]
+
+
+# ---------------------------------------------------------------------------
+# Image preprocessing (PIL + cv2 + longhand normalisation)
+# ---------------------------------------------------------------------------
+def preprocess_image_oracle(
+    img: np.ndarray, process_res: int, method: str, patch: int = 14
+) -> tuple[np.ndarray, tuple[int, int, int, int]]:
+    """Reference for ``InputProcessor`` on one HxWx3 uint8 RGB image.
+
+    Returns ((3, H', W') float32 ImageNet-normalised, (scale_x, scale_y, crop_x, crop_y)
+    where intrinsics map as fx,cx *= scale_x; fy,cy *= scale_y; then cx -= crop_x;
+    cy -= crop_y).  Longhand from the documented behaviour: boundary resize to
+    ``process_res`` (cv2 INTER_CUBIC up, INTER_AREA down), then either round to the nearest
+    multiple of ``patch`` by a second resize ("*resize") or floor via centre crop ("*crop").
+    """
+    import cv2
+
+    h0, w0 = img.shape[:2]
+    side = max(w0, h0) if method.startswith("upper") else min(w0, h0)
+    out = img
+    if side != process_res:
+        s = process_res / side
+        nw, nh = max(1, round(w0 * s)), max(1, round(h0 * s))
+        interp = cv2.INTER_CUBIC if s > 1 else cv2.INTER_AREA
+        out = cv2.resize(out, (nw, nh), interpolation=interp)
+    h1, w1 = out.shape[:2]
+    sx, sy = w1 / w0, h1 / h0
+    crop_x = crop_y = 0.0
+    if method.endswith("resize"):
+
+        def near(x):
+            lo = (x // patch) * patch
+            return lo + patch if (lo + patch - x) <= (x - lo) else lo
+
+        nw, nh = max(1, near(w1)), max(1, near(h1))
+        if (nw, nh) != (w1, h1):
+            interp = cv2.INTER_CUBIC if (nw > w1 or nh > h1) else cv2.INTER_AREA
+            out = cv2.resize(out, (nw, nh), interpolation=interp)
+        sx *= nw / w1
+        sy *= nh / h1
+    else:
+        nw, nh = (w1 // patch) * patch, (h1 // patch) * patch
+        left, top = (w1 - nw) // 2, (h1 - nh) // 2
+        out = out[top : top + nh, left : left + nw]
+        crop_x, crop_y = left, top
+    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+    std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+    norm = (out.astype(np.float32) / 255.0 - mean) / std
+    return norm.transpose(2, 0, 1), (sx, sy, crop_x, crop_y)
