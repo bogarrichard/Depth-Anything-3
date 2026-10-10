@@ -21,27 +21,17 @@ In addition, it parallelizes per-image preprocessing using the provided `paralle
 
 from __future__ import annotations
 
-import functools
 from collections.abc import Sequence
 import cv2
 import numpy as np
 import torch
 import torchvision.transforms as T
 from PIL import Image
+from torchvision.transforms.v2 import InterpolationMode
+from torchvision.transforms.v2 import functional as TF
 
 from depth_anything_3.utils.logger import logger
 from depth_anything_3.utils.parallel_utils import parallel_execution
-
-
-@functools.lru_cache(maxsize=64)
-def _area_weights_cached(n_in: int, n_out: int, device: torch.device, dtype: torch.dtype):
-    """``(n_out, n_in)`` area-overlap weights, cached: shapes repeat across images."""
-    scale = n_in / n_out
-    lo = torch.arange(n_out, device=device, dtype=torch.float64)[:, None] * scale
-    hi = lo + scale
-    cell = torch.arange(n_in, device=device, dtype=torch.float64)[None, :]
-    overlap = (torch.minimum(hi, cell + 1) - torch.maximum(lo, cell)).clamp_(min=0)
-    return (overlap / scale).to(dtype)
 
 
 class InputProcessor:
@@ -343,35 +333,16 @@ class InputProcessor:
         return out
 
     @staticmethod
-    def _area_weights(n_in: int, n_out: int, device, dtype=torch.float32) -> torch.Tensor:
-        """``(n_out, n_in)`` matrix of exact area-overlap weights (cv2 INTER_AREA)."""
-        return _area_weights_cached(n_in, n_out, torch.device(device), dtype)
+    def _resize_tensor(x: torch.Tensor, new_w: int, new_h: int, upscale: bool) -> torch.Tensor:
+        """Resize a ``(3, H, W)`` uint8 tensor with torchvision, returning uint8.
 
-    @classmethod
-    def _resize_tensor(
-        cls, x: torch.Tensor, new_w: int, new_h: int, upscale: bool
-    ) -> torch.Tensor:
-        """Resize a ``(3, H, W)`` uint8 tensor, returning uint8.
-
-        Mirrors ``cv2.resize``: bicubic when upscaling (INTER_CUBIC, same a=-0.75 kernel)
-        and exact area averaging when downscaling (INTER_AREA, as two matrix products with
-        fractional-overlap weights). The result is rounded and clamped to uint8 like cv2's.
-
-        The matmuls run in float32. A caller who enables TF32 globally
-        (``torch.set_float32_matmul_precision("high")``) on a GPU loosens the
-        one-level match with cv2 for downscaling; this method does not change global state.
+        Bicubic when upscaling and antialiased bilinear when downscaling, the torchvision
+        counterparts of the NumPy path's cv2 INTER_CUBIC and INTER_AREA. The pixels differ
+        from cv2's by a few 8-bit levels at most edges (the filters differ); sizes and
+        intrinsics are the same.
         """
-        f = x.float()
-        _, h, w = f.shape
-        if upscale:
-            f = torch.nn.functional.interpolate(
-                f[None], size=(new_h, new_w), mode="bicubic", align_corners=False
-            )[0]
-        else:
-            wy = cls._area_weights(h, new_h, f.device)
-            wx = cls._area_weights(w, new_w, f.device)
-            f = torch.matmul(torch.matmul(wy, f), wx.T)
-        return f.round_().clamp_(0, 255).to(torch.uint8)
+        mode = InterpolationMode.BICUBIC if upscale else InterpolationMode.BILINEAR
+        return TF.resize(x, [new_h, new_w], interpolation=mode, antialias=True)
 
     def _process_one_tensor(
         self,

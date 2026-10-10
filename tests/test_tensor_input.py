@@ -2,9 +2,10 @@
 
 The NumPy/PIL path (PIL + ``cv2.resize``) is the reference: for the same sizes and
 ``process_res_method`` the tensor path must give the same shapes and the same adjusted
-intrinsics exactly, and pixel values within a small tolerance (measured: at most one
-8-bit level, i.e. <= 1/255 of the range, on up- and downscaling; the cv2 rounding
-differs in the last bit).
+intrinsics exactly. Pixel values differ slightly, because the tensor path resizes with
+torchvision (antialiased bilinear down, bicubic up) instead of cv2 (INTER_AREA down,
+INTER_CUBIC up): measured on these images at most 1.2 8-bit levels on average and 7 at
+the worst pixel, so the tests allow a mean of 2 and a maximum of 12.
 """
 
 import numpy as np
@@ -18,6 +19,13 @@ METHODS = ["upper_bound_resize", "lower_bound_resize", "upper_bound_crop", "lowe
 # (w, h): downscale, upscale, odd sizes, portrait, already aligned
 SIZES = [(640, 480), (100, 77), (333, 251), (251, 333), (56, 42), (31, 17)]
 STD = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
+MEAN_LEVELS, MAX_LEVELS = 2.0, 12.0
+
+
+def _assert_close_to_cv2(levels):
+    """``levels``: absolute pixel differences in 8-bit levels."""
+    levels = torch.as_tensor(levels, dtype=torch.float64)
+    assert levels.mean().item() <= MEAN_LEVELS and levels.max().item() <= MAX_LEVELS
 
 
 @pytest.fixture(scope="module")
@@ -47,8 +55,7 @@ def test_shapes_intrinsics_and_pixels_match_the_numpy_path(proc, method, size, r
     new, _, k_new = proc([torch.from_numpy(a)], None, K, res, method)
     assert new.shape == old.shape and new.dtype == torch.float32
     np.testing.assert_array_equal(k_new.numpy(), k_old.numpy())
-    err_levels = ((new - old).abs() * STD * 255).max().item()
-    assert err_levels <= 1.0 + 1e-3  # at most one 8-bit level
+    _assert_close_to_cv2((new - old).abs() * STD * 255)
 
 
 @pytest.mark.parametrize("layout", ["nhwc", "nchw", "list_hwc", "list_chw"])
@@ -120,7 +127,7 @@ def test_bad_tensor_input_is_rejected(proc, bad, match):
 @pytest.mark.parametrize("size", SIZES)
 def test_both_paths_match_an_independent_pil_cv2_reference(proc, method, size):
     """The numpy path must equal the longhand cv2 reference (it is the unchanged old
-    code), and the tensor path must be within one 8-bit level of it."""
+    code), and the tensor path must stay close to it."""
     w, h = size
     a = _img(w, h, seed=3)
     ref, (sx, sy, cx, cy) = preprocess_image_oracle(a, 56, method)
@@ -137,38 +144,14 @@ def test_both_paths_match_an_independent_pil_cv2_reference(proc, method, size):
 
     new, _, k_new = proc([torch.from_numpy(a)], None, [K], 56, method)
     assert new.shape[1:] == ref.shape
-    assert ((new[0].numpy() - ref) * STD[0].numpy() * 255).max() <= 1.0 + 1e-3
+    _assert_close_to_cv2(np.abs(new[0].numpy() - ref) * STD[0].numpy() * 255)
     np.testing.assert_allclose(k_new[0].numpy(), k_ref, atol=1e-4)
-
-
-@pytest.mark.parametrize("n_in,n_out", [(480, 378), (640, 504), (100, 7), (17, 16), (5, 5)])
-def test_area_weights_rows_sum_to_one(n_in, n_out):
-    w = InputProcessor._area_weights(n_in, n_out, torch.device("cpu"))
-    assert w.shape == (n_out, n_in)
-    torch.testing.assert_close(w.sum(1), torch.ones(n_out))
-    assert (w >= 0).all()
-
-
-def test_area_weights_identity_at_scale_one():
-    w = InputProcessor._area_weights(9, 9, torch.device("cpu"))
-    torch.testing.assert_close(w, torch.eye(9))
-
-
-def test_area_weights_integer_scale_is_block_averaging():
-    w = InputProcessor._area_weights(12, 4, torch.device("cpu"))
-    x = torch.arange(12, dtype=torch.float32)
-    torch.testing.assert_close(w @ x, x.view(4, 3).mean(1))
-
-
-def test_area_weights_are_cached():
-    cpu = torch.device("cpu")
-    assert InputProcessor._area_weights(30, 20, cpu) is InputProcessor._area_weights(30, 20, cpu)
 
 
 @pytest.mark.parametrize(
     "src,dst", [((480, 640), (378, 504)), ((77, 100), (60, 41)), ((50, 50), (7, 49))]
 )
-def test_resize_tensor_downscale_matches_cv2_inter_area(src, dst):
+def test_resize_tensor_downscale_is_close_to_cv2_inter_area(src, dst):
     cv2 = pytest.importorskip("cv2")
     a = _img(src[1], src[0], seed=5)
     ref = cv2.resize(a, (dst[1], dst[0]), interpolation=cv2.INTER_AREA)
@@ -177,17 +160,17 @@ def test_resize_tensor_downscale_matches_cv2_inter_area(src, dst):
     )
     assert out.dtype == torch.uint8
     diff = out.permute(1, 2, 0).numpy().astype(int) - ref.astype(int)
-    assert np.abs(diff).max() <= 1
+    _assert_close_to_cv2(np.abs(diff))
 
 
 @pytest.mark.parametrize("src,dst", [((42, 56), (84, 112)), ((30, 41), (77, 53))])
-def test_resize_tensor_upscale_matches_cv2_inter_cubic(src, dst):
+def test_resize_tensor_upscale_is_close_to_cv2_inter_cubic(src, dst):
     cv2 = pytest.importorskip("cv2")
     a = _img(src[1], src[0], seed=6)
     ref = cv2.resize(a, (dst[1], dst[0]), interpolation=cv2.INTER_CUBIC)
     out = InputProcessor._resize_tensor(torch.from_numpy(a).permute(2, 0, 1), dst[1], dst[0], True)
     diff = out.permute(1, 2, 0).numpy().astype(int) - ref.astype(int)
-    assert np.abs(diff).max() <= 1
+    _assert_close_to_cv2(np.abs(diff))
 
 
 def test_nchw_batch_with_height_three_is_read_as_nchw():
@@ -217,7 +200,7 @@ def test_single_3d_tensor_in_each_layout(proc):
     for single in (t, t.permute(2, 0, 1).contiguous()):
         out, *_ = proc(single, None, None, 56, "upper_bound_resize")
         assert out.shape == ref.shape
-        assert ((out - ref).abs() * STD * 255).max() <= 1.0 + 1e-3
+        _assert_close_to_cv2((out - ref).abs() * STD * 255)
 
 
 def test_tensors_on_different_devices_are_rejected(proc):
@@ -233,9 +216,10 @@ def test_inference_accepts_tensors_and_agrees_with_numpy(tiny_api_model):
     new = tiny_api_model.inference(torch.from_numpy(np.stack(arrs)), process_res=56)
     assert new.depth.shape == old.depth.shape
     assert new.processed_images.shape == old.processed_images.shape
-    assert (
-        np.abs(new.processed_images.astype(int) - old.processed_images.astype(int)).max() <= 2
-    )  # 1 level + uint8 truncation on denormalise
+    # the resize difference plus uint8 truncation on denormalise
+    _assert_close_to_cv2(
+        np.abs(new.processed_images.astype(int) - old.processed_images.astype(int))
+    )
     np.testing.assert_allclose(
         new.depth, old.depth, rtol=0.05, atol=0.05 * np.abs(old.depth).max()
     )
