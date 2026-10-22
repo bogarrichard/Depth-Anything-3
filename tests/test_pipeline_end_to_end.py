@@ -200,6 +200,71 @@ def test_supplied_poses_are_returned_and_the_depth_is_rescaled(tiny_api_model, i
     assert ratio.std() / abs(ratio.mean()) < 1e-3
 
 
+def _with_cameras(model, image_files, **options):
+    from conftest import random_se3
+
+    n = len(image_files)
+    extrinsics = random_se3(n, seed=5).numpy().astype(np.float32)
+    intrinsics = np.tile(np.eye(3, dtype=np.float32), (n, 1, 1))
+    intrinsics[:, 0, 0] = intrinsics[:, 1, 1] = 40.0
+    prediction = model.inference(
+        image_files,
+        extrinsics=extrinsics,
+        intrinsics=intrinsics,
+        process_res=PROCESS_RES,
+        **options,
+    )
+    return prediction, extrinsics, intrinsics
+
+
+def test_kept_predicted_poses_are_the_networks_own(tiny_api_model, image_files):
+    """``keep_predicted_poses`` without the scale alignment hands back the network's answer
+    untouched; by default the same call returns the input poses moved into that answer's frame."""
+    from depth_anything_3.utils.pose_align import align_poses_umeyama
+
+    kept, extrinsics, _ = _with_cameras(
+        tiny_api_model, image_files, keep_predicted_poses=True, align_to_input_ext_scale=False
+    )
+    echoed, _, _ = _with_cameras(tiny_api_model, image_files, align_to_input_ext_scale=False)
+
+    assert kept.extrinsics.shape == (len(image_files), 3, 4)
+    np.testing.assert_array_equal(kept.intrinsics, echoed.intrinsics)  # the inputs, resized
+    np.testing.assert_array_equal(kept.depth, echoed.depth)
+    # The default result is the inputs fitted onto the very poses kept here.
+    _, _, _, expected = align_poses_umeyama(
+        kept.extrinsics, extrinsics, return_aligned=True, random_state=42
+    )
+    np.testing.assert_allclose(echoed.extrinsics, expected, atol=1e-4)
+    assert not np.allclose(kept.extrinsics, echoed.extrinsics[:, :3, :], atol=1e-3)
+
+
+def test_kept_predicted_poses_are_aligned_onto_the_inputs(tiny_api_model, image_files):
+    """With the scale alignment the network's poses are moved onto the inputs by one
+    similarity, and the depth follows that similarity's scale."""
+    from depth_anything_3.utils.pose_align import align_poses_umeyama
+
+    raw, _, _ = _with_cameras(
+        tiny_api_model, image_files, keep_predicted_poses=True, align_to_input_ext_scale=False
+    )
+    aligned, extrinsics, _ = _with_cameras(
+        tiny_api_model, image_files, keep_predicted_poses=True, align_to_input_ext_scale=True
+    )
+
+    assert aligned.extrinsics.shape == (len(image_files), 3, 4)
+    assert aligned.extrinsics.dtype == raw.extrinsics.dtype
+    np.testing.assert_array_equal(aligned.intrinsics, raw.intrinsics)
+    _, _, scale, moved = align_poses_umeyama(
+        extrinsics, raw.extrinsics, return_aligned=True, random_state=42
+    )
+    np.testing.assert_allclose(aligned.extrinsics, moved[:, :3, :], atol=1e-4)
+    np.testing.assert_allclose(aligned.depth, raw.depth * scale, rtol=1e-5)
+    # Fitting the result onto the inputs again leaves nothing to do.
+    r, t, s = align_poses_umeyama(extrinsics, aligned.extrinsics)
+    assert s == pytest.approx(1.0, abs=1e-4)
+    np.testing.assert_allclose(r, np.eye(3), atol=1e-4)
+    np.testing.assert_allclose(t, 0.0, atol=1e-4)
+
+
 def test_supplied_camera_arrays_are_not_mutated(tiny_api_model, image_files):
     n = len(image_files)
     extrinsics = random_se3_float(n)

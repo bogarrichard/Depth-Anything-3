@@ -144,6 +144,7 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         extrinsics: np.ndarray | None = None,
         intrinsics: np.ndarray | None = None,
         align_to_input_ext_scale: bool = True,
+        keep_predicted_poses: bool = False,
         infer_gs: bool = False,
         use_ray_pose: bool = False,
         ref_view_strategy: str = "saddle_balanced",
@@ -172,6 +173,13 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
             extrinsics: Camera extrinsics (N, 4, 4)
             intrinsics: Camera intrinsics (N, 3, 3)
             align_to_input_ext_scale: whether to align the input pose scale to the prediction
+            keep_predicted_poses: With input extrinsics, return the network's own poses
+                instead of the input ones. The network uses the inputs as camera tokens and
+                may correct them; by default that correction is discarded. With
+                ``align_to_input_ext_scale`` the predicted poses are Sim(3)-aligned onto the
+                inputs (camera centres, RANSAC from 10 views) and the depth is put in the
+                inputs' scale; without it they are returned as predicted, in the network's
+                frame and scale. Intrinsics are the input ones either way.
             infer_gs: Enable the 3D Gaussian branch (needed for `gs_ply`/`gs_video` exports)
             use_ray_pose: Use ray-based pose estimation instead of camera decoder (default: False)
             ref_view_strategy: Strategy for selecting reference view from multiple views.
@@ -223,7 +231,7 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
 
         # Align prediction to extrinsincs
         prediction = self._align_to_input_extrinsics_intrinsics(
-            extrinsics, intrinsics, prediction, align_to_input_ext_scale
+            extrinsics, intrinsics, prediction, align_to_input_ext_scale, keep_predicted_poses
         )
 
         # Add processed images for visualization
@@ -351,12 +359,27 @@ class DepthAnything3(nn.Module, PyTorchModelHubMixin):
         intrinsics: torch.Tensor | None,
         prediction: Prediction,
         align_to_input_ext_scale: bool = True,
+        keep_predicted_poses: bool = False,
         ransac_view_thresh: int = 10,
     ) -> Prediction:
         """Align depth map to input extrinsics"""
         if extrinsics is None:
             return prediction
         prediction.intrinsics = intrinsics.numpy()
+        if keep_predicted_poses:
+            if align_to_input_ext_scale:
+                # The reverse of the fit below: the prediction is moved onto the inputs.
+                _, _, scale, aligned_extrinsics = align_poses_umeyama(
+                    extrinsics.numpy(),
+                    prediction.extrinsics,
+                    ransac=len(extrinsics) >= ransac_view_thresh,
+                    return_aligned=True,
+                    random_state=42,
+                )
+                dtype = prediction.extrinsics.dtype
+                prediction.extrinsics = aligned_extrinsics[..., :3, :].astype(dtype)
+                prediction.depth *= scale
+            return prediction
         _, _, scale, aligned_extrinsics = align_poses_umeyama(
             prediction.extrinsics,
             extrinsics.numpy(),
